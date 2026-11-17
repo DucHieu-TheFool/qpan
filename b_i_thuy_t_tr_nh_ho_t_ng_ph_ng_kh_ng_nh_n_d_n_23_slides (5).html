@@ -1,0 +1,2473 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDQP-AN 11 | Bài 5 (Phần III): Hoạt Động Phòng Không Nhân Dân (23 Slides)</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Be Vietnam Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Be Vietnam Pro"', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        /* =====================================================================
+           DESIGN TOKENS: DARK TACTICAL COMMAND THEME (#04070D -> #0B1322)
+           ===================================================================== */
+        :root {
+            --bg-base: radial-gradient(circle at 50% 22%, #0B1322 0%, #060B15 58%, #04070D 100%);
+            --tactical-grid: rgba(56, 189, 248, 0.048);
+            --tactical-ring: rgba(234, 179, 8, 0.055);
+            --frame-gold: rgba(234, 179, 8, 0.45);
+            --frame-radar: rgba(56, 189, 248, 0.36);
+
+            /* Top Horizontal Lead Box */
+            --lead-bg: linear-gradient(135deg, rgba(11, 19, 34, 0.95) 0%, rgba(15, 24, 42, 0.93) 100%);
+            --lead-border: rgba(234, 179, 8, 0.5);
+
+            /* Card 01 (Left): Tactical Radar Cyan */
+            --card1-bg: linear-gradient(165deg, rgba(11, 19, 34, 0.94) 0%, rgba(8, 15, 28, 0.96) 100%);
+            --card1-border: rgba(56, 189, 248, 0.44);
+
+            /* Card 02 (Right): Tactical Command Gold */
+            --card2-bg: linear-gradient(165deg, rgba(15, 24, 42, 0.95) 0%, rgba(9, 16, 30, 0.97) 100%);
+            --card2-border: rgba(234, 179, 8, 0.48);
+
+            --bar-bg: rgba(4, 7, 13, 0.95);
+            --glass-ui: rgba(11, 19, 34, 0.92);
+            --shadow-elevated: 0 14px 34px -8px rgba(0, 0, 0, 0.78);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background: var(--bg-base);
+            background-color: #04070D;
+            color: #F1F5F9;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: "Be Vietnam Pro", sans-serif;
+        }
+
+        /* Tactical Coordinate Grid & Radar Rings Overlay */
+        .topo-overlay {
+            background-image:
+                linear-gradient(to right, var(--tactical-grid) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--tactical-grid) 1px, transparent 1px),
+                radial-gradient(circle at 50% 46%, transparent 20%, var(--tactical-ring) 20.5%, transparent 21%),
+                radial-gradient(circle at 50% 46%, transparent 36%, var(--tactical-ring) 36.5%, transparent 37%);
+            background-size: 64px 64px, 64px 64px, 100% 100%, 100% 100%;
+        }
+
+        /* =====================================================================
+           FIXED 100VH SHELL: HEADER 60PX + VIEWPORT CALC(100VH - 120PX) + FOOTER 60PX
+           ===================================================================== */
+        #slide-viewport {
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 36px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Gold-Trimmed Tactical Scrollbar */
+        #slide-viewport::-webkit-scrollbar,
+        .custom-scroll::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        #slide-viewport::-webkit-scrollbar-track,
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(11, 19, 34, 0.7);
+            border-radius: 999px;
+        }
+
+        #slide-viewport::-webkit-scrollbar-thumb,
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #EAB308, #38BDF8);
+            border-radius: 999px;
+        }
+
+        #slide-viewport::-webkit-scrollbar-thumb:hover {
+            background: #FACC15;
+        }
+
+        /* =====================================================================
+           OUTER COMMAND FRAME & 4 CORNER RETICLES
+           ===================================================================== */
+        .outer-command-frame {
+            position: fixed;
+            inset: 6px;
+            border: 1px solid var(--frame-gold);
+            pointer-events: none;
+            z-index: 30;
+            border-radius: 10px;
+        }
+
+        .outer-command-frame::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border: 1px solid var(--frame-radar);
+            opacity: 0.45;
+            border-radius: 7px;
+        }
+
+        .screen-corner {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            z-index: 31;
+        }
+
+        .screen-corner-tl {
+            top: 6px;
+            left: 6px;
+            border-top: 3px solid #EAB308;
+            border-left: 3px solid #EAB308;
+            border-top-left-radius: 10px;
+        }
+
+        .screen-corner-tr {
+            top: 6px;
+            right: 6px;
+            border-top: 3px solid #EAB308;
+            border-right: 3px solid #EAB308;
+            border-top-right-radius: 10px;
+        }
+
+        .screen-corner-bl {
+            bottom: 6px;
+            left: 6px;
+            border-bottom: 3px solid #38BDF8;
+            border-left: 3px solid #38BDF8;
+            border-bottom-left-radius: 10px;
+        }
+
+        .screen-corner-br {
+            bottom: 6px;
+            right: 6px;
+            border-bottom: 3px solid #38BDF8;
+            border-right: 3px solid #38BDF8;
+            border-bottom-right-radius: 10px;
+        }
+
+        /* =====================================================================
+           CENTRAL ROTATING RADAR AZIMUTH GRID (120S)
+           ===================================================================== */
+        @keyframes spinRadarAzimuth {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .radar-wheel-spin {
+            animation: spinRadarAzimuth 120s linear infinite;
+            transform-origin: center center;
+        }
+
+        /* =====================================================================
+           TACTICAL GLASS BARS & SURFACES
+           ===================================================================== */
+        .tactical-bar {
+            background: var(--bar-bg);
+            backdrop-filter: blur(12px);
+        }
+
+        .ui-pill {
+            background: var(--glass-ui);
+            border: 1px solid rgba(234, 179, 8, 0.36);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+        }
+
+        .lead-box-surface {
+            background: var(--lead-bg);
+            border: 1.5px solid var(--lead-border);
+            border-left: 5px solid #EAB308;
+            box-shadow: var(--shadow-elevated);
+            color: #FFFFFF;
+            position: relative;
+        }
+
+        .card-tactical-left {
+            background: var(--card1-bg);
+            border: 1.5px solid var(--card1-border);
+            box-shadow: var(--shadow-elevated);
+            color: #F1F5F9;
+            position: relative;
+        }
+
+        .card-tactical-right {
+            background: var(--card2-bg);
+            border: 1.5px solid var(--card2-border);
+            box-shadow: var(--shadow-elevated);
+            color: #F1F5F9;
+            position: relative;
+        }
+
+        .card-corner-gold::before,
+        .card-corner-gold::after {
+            content: '';
+            position: absolute;
+            width: 11px;
+            height: 11px;
+            pointer-events: none;
+            border-color: rgba(234, 179, 8, 0.68);
+        }
+
+        .card-corner-gold::before {
+            top: 6px;
+            right: 6px;
+            border-top: 2px solid;
+            border-right: 2px solid;
+            border-top-right-radius: 3px;
+        }
+
+        .card-corner-gold::after {
+            bottom: 6px;
+            left: 6px;
+            border-bottom: 2px solid;
+            border-left: 2px solid;
+            border-bottom-left-radius: 3px;
+        }
+
+        /* =====================================================================
+           TEXTBOOK FIGURE THUMBNAIL (.fig-thumb) WITH OBJECT-FIT: CONTAIN ON #050912
+           ===================================================================== */
+        .fig-thumb {
+            background-color: #050912;
+            border: 1.5px solid rgba(234, 179, 8, 0.55);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fig-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #050912;
+            display: block;
+        }
+
+        /* Typography Fluid Scaling */
+        .slide-main-title {
+            color: #FFFFFF;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+            font-size: clamp(1.22rem, 2.05vw, 1.88rem);
+            line-height: 1.24;
+        }
+
+        .lead-fluid {
+            font-size: clamp(0.98rem, 1.24vw, 1.15rem);
+            line-height: 1.58;
+        }
+
+        .card-heading-fluid {
+            font-size: clamp(1.04rem, 1.36vw, 1.28rem);
+            line-height: 1.32;
+        }
+
+        .body-fluid {
+            font-size: clamp(0.92rem, 1.05vw, 1.03rem);
+            line-height: 1.56;
+        }
+
+        .slide-transition {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+
+        .slide-transition.fade-out {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+    </style>
+</head>
+<body class="topo-overlay antialiased selection:bg-amber-400 selection:text-slate-950 flex flex-col justify-between">
+
+    <!-- ================= OUTER COMMAND FRAME & 4 CORNER RETICLES ================= -->
+    <div class="outer-command-frame"></div>
+    <div class="screen-corner screen-corner-tl"></div>
+    <div class="screen-corner screen-corner-tr"></div>
+    <div class="screen-corner screen-corner-bl"></div>
+    <div class="screen-corner screen-corner-br"></div>
+
+    <!-- ================= 3-LAYER BATTLEFIELD CANVAS (JETS + TRACERS + SMOKE) ================= -->
+    <canvas id="ambientCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- ================= BLUEPRINT 01 (BOTTOM-LEFT, 7% OPACITY): MAIN BATTLE TANK ================= -->
+    <div class="fixed bottom-14 left-4 sm:left-8 pointer-events-none z-0 opacity-[0.07] text-sky-400 w-[300px] sm:w-[410px]">
+        <svg viewBox="0 0 460 190" fill="none" stroke="currentColor" stroke-width="1.6">
+            <line x1="255" y1="68" x2="452" y2="62" stroke-width="4.5" stroke-linecap="round"/>
+            <rect x="335" y="61" width="28" height="9" rx="2" fill="currentColor" fill-opacity="0.25"/>
+            <rect x="442" y="59" width="12" height="7" rx="1"/>
+            <path d="M125,94 L152,58 L242,58 L268,84 L258,96 L125,96 Z" fill="currentColor" fill-opacity="0.12"/>
+            <rect x="165" y="46" width="24" height="12" rx="2"/>
+            <rect x="202" y="49" width="16" height="9" rx="1"/>
+            <line x1="142" y1="58" x2="142" y2="24" stroke-width="1.2"/>
+            <polygon points="154,66 174,66 170,80 150,80"/>
+            <polygon points="180,66 200,66 196,80 176,80"/>
+            <polygon points="206,66 226,66 222,80 202,80"/>
+            <path d="M44,116 L82,96 L328,96 L362,118 L345,134 L58,134 Z" fill="currentColor" fill-opacity="0.14"/>
+            <rect x="75" y="114" width="255" height="16" rx="2" stroke-dasharray="14 4"/>
+            <rect x="52" y="134" width="298" height="36" rx="18" stroke-width="2.2"/>
+            <circle cx="80" cy="152" r="13"/><circle cx="80" cy="152" r="5"/>
+            <circle cx="124" cy="152" r="13"/><circle cx="124" cy="152" r="5"/>
+            <circle cx="168" cy="152" r="13"/><circle cx="168" cy="152" r="5"/>
+            <circle cx="212" cy="152" r="13"/><circle cx="212" cy="152" r="5"/>
+            <circle cx="256" cy="152" r="13"/><circle cx="256" cy="152" r="5"/>
+            <circle cx="300" cy="152" r="13"/><circle cx="300" cy="152" r="5"/>
+            <circle cx="332" cy="148" r="9"/>
+            <line x1="20" y1="175" x2="440" y2="175" stroke-dasharray="6 4" stroke-width="1"/>
+            <text x="24" y="186" fill="currentColor" font-size="9" font-family="monospace">MBT-ARMOR // GROUND DEFENSE UNIT</text>
+        </svg>
+    </div>
+
+    <!-- ================= BLUEPRINT 02 (BOTTOM-RIGHT, 7% OPACITY): SAM & RADAR ================= -->
+    <div class="fixed bottom-14 right-4 sm:right-8 pointer-events-none z-0 opacity-[0.07] text-amber-400 w-[300px] sm:w-[400px]">
+        <svg viewBox="0 0 440 210" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="305" y="146" width="88" height="26" rx="3" fill="currentColor" fill-opacity="0.14"/>
+            <circle cx="322" cy="178" r="9"/><circle cx="376" cy="178" r="9"/>
+            <line x1="349" y1="146" x2="349" y2="96" stroke-width="2.5"/>
+            <path d="M318,64 Q349,105 380,64" stroke-width="2.4"/>
+            <line x1="349" y1="84" x2="349" y2="52"/>
+            <circle cx="349" cy="50" r="3.5" fill="currentColor"/>
+            <path d="M315,38 A48,48 0 0,1 383,38" stroke-dasharray="4 4" stroke-width="1.1"/>
+            <path d="M300,24 A68,68 0 0,1 398,24" stroke-dasharray="4 4" stroke-width="1"/>
+            <rect x="42" y="142" width="195" height="28" rx="4" fill="currentColor" fill-opacity="0.14"/>
+            <rect x="192" y="122" width="45" height="20" rx="2"/>
+            <circle cx="68" cy="177" r="11"/><circle cx="105" cy="177" r="11"/>
+            <circle cx="175" cy="177" r="11"/><circle cx="212" cy="177" r="11"/>
+            <rect x="108" y="124" width="32" height="18"/>
+            <g transform="translate(124, 124) rotate(-36)">
+                <line x1="-15" y1="0" x2="135" y2="0" stroke-width="3.2"/>
+                <polygon points="135,-4 152,0 135,4" fill="currentColor"/>
+                <polygon points="12,-10 26,0 12,10"/>
+                <line x1="-10" y1="-14" x2="128" y2="-14" stroke-width="2.5" stroke-dasharray="12 3"/>
+                <polygon points="128,-17 142,-14 128,-11" fill="currentColor"/>
+            </g>
+            <line x1="20" y1="192" x2="420" y2="192" stroke-dasharray="6 4" stroke-width="1"/>
+            <text x="155" y="204" fill="currentColor" font-size="9" font-family="monospace">AIR-DEFENSE // SAM & RADAR SECTOR</text>
+        </svg>
+    </div>
+
+    <!-- ================= BLUEPRINT 03 (CENTER, 7% OPACITY): RADAR AZIMUTH + SU-30MK2 ================= -->
+    <div class="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+        <div class="relative w-[760px] h-[760px] sm:w-[860px] sm:h-[860px] flex items-center justify-center text-amber-300 opacity-[0.07]">
+            <svg viewBox="0 0 800 800" class="radar-wheel-spin w-full h-full" fill="none" stroke="currentColor">
+                <circle cx="400" cy="400" r="375" stroke-width="1.5"/>
+                <circle cx="400" cy="400" r="360" stroke-width="0.9" stroke-dasharray="3 6"/>
+                <circle cx="400" cy="400" r="290" stroke-width="1.1"/>
+                <circle cx="400" cy="400" r="210" stroke-width="1" stroke-dasharray="10 6"/>
+                <circle cx="400" cy="400" r="130" stroke-width="1.2"/>
+                <line x1="400" y1="15" x2="400" y2="785" stroke-width="0.9"/>
+                <line x1="15" y1="400" x2="785" y2="400" stroke-width="0.9"/>
+                <line x1="135" y1="135" x2="665" y2="665" stroke-width="0.7" stroke-dasharray="6 6"/>
+                <line x1="665" y1="135" x2="135" y2="665" stroke-width="0.7" stroke-dasharray="6 6"/>
+            </svg>
+            <svg viewBox="0 0 300 300" class="absolute w-[290px] h-[290px] text-sky-300" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M150,24 L158,68 L166,115 L245,178 L245,192 L168,176 L168,225 L198,252 L198,264 L162,250 L158,268 L152,268 L150,244 L148,268 L142,268 L138,250 L102,264 L102,252 L132,225 L132,176 L55,192 L55,178 L134,115 L142,68 Z" fill="currentColor" fill-opacity="0.16"/>
+                <polygon points="138,104 114,122 136,122"/>
+                <polygon points="162,104 186,122 164,122"/>
+                <ellipse cx="150" cy="82" rx="5" ry="18"/>
+                <line x1="142" y1="196" x2="142" y2="256" stroke-width="2.2"/>
+                <line x1="158" y1="196" x2="158" y2="256" stroke-width="2.2"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- ================= TOP PROGRESS LINE ================= -->
+    <div class="fixed top-[6px] left-[16px] right-[16px] h-[3px] bg-slate-800/80 z-40 rounded-full overflow-hidden">
+        <div id="topProgressBar" class="h-full bg-gradient-to-r from-sky-400 via-amber-400 to-red-500 transition-all duration-300" style="width: 4.35%;"></div>
+    </div>
+
+    <!-- ================= HEADER BAR (EXACT 60PX HEIGHT, NO-WRAP BUTTONS) ================= -->
+    <header class="tactical-bar relative z-20 w-full border-b border-amber-500/35 shrink-0 h-[60px]">
+        <div class="w-full max-w-[1460px] mx-auto h-full px-4 sm:px-8 flex items-center justify-between gap-2">
+            <!-- Left Badges -->
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <span class="px-3 py-1 rounded-md bg-amber-400/15 text-amber-300 border border-amber-400/50 font-extrabold text-[11px] sm:text-xs tracking-wider uppercase shrink-0 whitespace-nowrap">
+                    ★ GDQP-AN 11 • BÀI 5
+                </span>
+                <span id="headerSectionBadge" class="px-3 py-1 rounded-md ui-pill font-extrabold text-[11px] sm:text-xs tracking-wider uppercase truncate text-sky-400">
+                    MỞ ĐẦU CHUYÊN ĐỀ
+                </span>
+            </div>
+
+            <!-- Right Controls -->
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <button onclick="this.blur(); toggleIndexModal()" class="px-3 py-1.5 rounded-lg ui-pill hover:border-amber-400 text-xs font-extrabold flex items-center gap-1.5 transition cursor-pointer text-white shrink-0 whitespace-nowrap" title="Mục lục 23 trang (Phím G)">
+                    <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <span class="hidden sm:inline">Mục lục (23)</span>
+                </button>
+
+                <button id="btnToggleFx" onclick="this.blur(); toggleAmbientFx()" class="px-2.5 sm:px-3 py-1.5 rounded-lg ui-pill hover:border-sky-400 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer text-slate-100 shrink-0 whitespace-nowrap" title="Bật/Tắt hiệu ứng động">
+                    <span id="fxDot" class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                    <span class="hidden md:inline">Hiệu ứng</span>
+                </button>
+
+                <button onclick="this.blur(); toggleFullScreen()" class="px-2.5 py-1.5 rounded-lg ui-pill hover:border-amber-400 text-xs font-bold flex items-center justify-center transition cursor-pointer text-amber-300 shrink-0 whitespace-nowrap" title="Toàn màn hình (Phím F)">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= MAIN SCROLLABLE SLIDE VIEWPORT (CALC(100VH - 120PX)) ================= -->
+    <main id="slide-viewport" class="relative z-10 w-full max-w-[1460px] mx-auto px-4 sm:px-8 pt-3">
+        <div id="slideStage" class="slide-transition w-full flex flex-col justify-start">
+            <!-- Pure DOM Content Injected Here via renderSlide() -->
+        </div>
+    </main>
+
+    <!-- ================= FOOTER NAVIGATION BAR (EXACT 60PX HEIGHT, NO-WRAP BUTTONS) ================= -->
+    <footer class="tactical-bar relative z-20 w-full border-t border-amber-500/35 shrink-0 h-[60px]">
+        <div class="w-full max-w-[1460px] mx-auto h-full px-4 sm:px-8 flex items-center justify-between gap-2">
+            <!-- Left Helper Text -->
+            <div class="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-400 min-w-0 truncate">
+                <span class="shrink-0">Phím tắt:</span>
+                <kbd class="px-2 py-0.5 rounded ui-pill font-extrabold text-[11px] text-amber-300 shrink-0">←</kbd>
+                <kbd class="px-2 py-0.5 rounded ui-pill font-extrabold text-[11px] text-amber-300 shrink-0">→</kbd>
+                <span class="shrink-0">hoặc</span>
+                <kbd class="px-2 py-0.5 rounded ui-pill font-extrabold text-[11px] text-amber-300 shrink-0">Space</kbd>
+                <span class="truncate">• Cuộn chuột tự do để đọc trọn vẹn các ô phân tích</span>
+            </div>
+
+            <!-- Right Navigation Buttons -->
+            <div class="flex items-center justify-between md:justify-end gap-2 sm:gap-2.5 w-full md:w-auto shrink-0">
+                <button id="btnPrev" onclick="this.blur(); prevSlide()" class="px-3.5 sm:px-4 py-1.5 rounded-xl ui-pill hover:border-sky-400 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition disabled:opacity-35 cursor-pointer text-white shrink-0 whitespace-nowrap">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>Trang trước</span>
+                </button>
+
+                <div id="footerCounter" class="px-3.5 py-1.5 rounded-xl ui-pill font-extrabold text-xs sm:text-sm tracking-widest min-w-[88px] text-center text-amber-300 shrink-0 whitespace-nowrap">
+                    01 / 23
+                </div>
+
+                <button id="btnNext" onclick="this.blur(); nextSlide()" class="px-4 sm:px-5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 border border-amber-200 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-md disabled:opacity-35 cursor-pointer shrink-0 whitespace-nowrap">
+                    <span>Trang tiếp</span>
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= 23-SLIDE DIRECTORY MODAL ================= -->
+    <div id="indexModal" class="fixed inset-0 bg-[#04070D]/90 backdrop-blur-md z-50 hidden items-center justify-center p-4 sm:p-8" onclick="toggleIndexModal(false)">
+        <div class="card-tactical-left w-full max-w-6xl max-h-[88vh] rounded-2xl flex flex-col overflow-hidden border-2 border-amber-400/60" onclick="event.stopPropagation()">
+            <div class="p-4 sm:p-5 border-b border-amber-400/30 flex items-center justify-between bg-[#050912] text-white">
+                <div>
+                    <h3 class="text-lg sm:text-xl font-extrabold text-amber-300">Mục Lục Toàn Bộ 23 Trang Thuyết Trình (Phần III)</h3>
+                    <p class="text-xs mt-0.5 text-slate-300">Bấm trực tiếp vào trang bất kỳ để chuyển nhanh (Bấm ESC để đóng)</p>
+                </div>
+                <button onclick="this.blur(); toggleIndexModal(false)" class="px-3.5 py-1.5 rounded-lg bg-amber-400 text-slate-950 text-xs font-extrabold cursor-pointer hover:bg-amber-300 shrink-0 whitespace-nowrap">
+                    Đóng (ESC)
+                </button>
+            </div>
+            <div id="indexGrid" class="p-4 sm:p-5 overflow-y-auto custom-scroll grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 bg-[#080F1D]">
+                <!-- Populated dynamically via pure DOM -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= LIGHTBOX ZOOM MODAL FOR TEXTBOOK FIGURES ================= -->
+    <div id="figureZoomModal" class="fixed inset-0 bg-[#04070D]/92 backdrop-blur-md z-50 hidden items-center justify-center p-4 sm:p-8" onclick="closeFigureZoom()">
+        <div class="card-tactical-left w-full max-w-4xl rounded-2xl p-5 sm:p-6 border-2 border-amber-400/60 flex flex-col items-center" onclick="event.stopPropagation()">
+            <div class="w-full flex items-center justify-between gap-2 pb-3 mb-4 border-b border-amber-400/30">
+                <span id="zoomFigCode" class="px-3 py-1 rounded-md bg-amber-400/15 text-amber-300 border border-amber-400/50 text-xs font-extrabold uppercase tracking-wider shrink-0 whitespace-nowrap">
+                    HÌNH MINH HỌA SGK
+                </span>
+                <button onclick="this.blur(); closeFigureZoom()" class="px-3.5 py-1.5 rounded-lg bg-amber-400 text-slate-950 text-xs font-extrabold cursor-pointer hover:bg-amber-300 shrink-0 whitespace-nowrap">
+                    Đóng (ESC)
+                </button>
+            </div>
+            <div id="zoomFigContainer" class="fig-thumb w-full rounded-xl p-2 h-[54vh] max-h-[560px]">
+                <!-- Zoomed image injected safely via DOM -->
+            </div>
+            <p id="zoomFigCaption" class="mt-4 text-sm sm:text-base italic text-center font-semibold leading-relaxed text-slate-100">
+                <!-- Caption injected via textContent -->
+            </p>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT: PURE-TEXT SLIDES DATA & SAFE DOM BUILDER ================= -->
+    <script>
+        /* =========================================================================
+           1. PURE-TEXT 23-SLIDE DATA ARRAY (ZERO HTML TAGS OR SVG STRINGS)
+           ========================================================================= */
+        const SLIDES = [
+            // -------------------- SLIDE 01 --------------------
+            {
+                section: "MỞ ĐẦU CHUYÊN ĐỀ",
+                partSub: "GIÁO DỤC QUỐC PHÒNG VÀ AN NINH LỚP 11 • BÀI 5 (PHẦN III)",
+                title: "HOẠT ĐỘNG PHÒNG KHÔNG NHÂN DÂN",
+                leadLabel: "LỜI DẪN MỞ ĐẦU BÀI THUYẾT TRÌNH",
+                leadText: "Chào thầy và các bạn. Hôm nay, mình xin trình bày nội dung trọng tâm của Bài 5 – Phần III: Hoạt động phòng không nhân dân.",
+                layout: "standard",
+                card1: {
+                    badge: "LÁ CHẮN CHỦ LỰC TẠI BIÊN HÒA",
+                    heading: "Trung đoàn Không quân 935 (Sư đoàn 370)",
+                    points: [
+                        {
+                            lead: "Niềm tự hào ngay trên quê hương Đồng Nai:",
+                            text: "Đóng quân tại Sân bay quân sự Biên Hòa, Trung đoàn Không quân 935 (Đoàn Không quân Biên Hòa anh hùng) ngày đêm trực chiến, làm chủ bầu trời phía Nam và thềm lục địa Tổ quốc."
+                        },
+                        {
+                            lead: "Thách thức của chiến tranh đường không hiện đại:",
+                            text: "Kẻ thù tiến công ồ ạt từ nhiều hướng bằng tên lửa hành trình bay bám địa hình, máy bay tàng hình và hàng loạt UAV/Drone giá rẻ."
+                        },
+                        {
+                            lead: "Yêu cầu chiến lược tất yếu:",
+                            text: "Không quân và tên lửa chủ lực cần một mạng lưới tai mắt và lưới lửa rộng khắp dưới mặt đất để không bị bất ngờ, bị động."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "MẠCH KIẾN THỨC PHẦN III (23 SLIDES)",
+                    heading: "Thế trận Toàn dân: Chủ động Thời bình – Kiên cường Thời chiến",
+                    points: [
+                        {
+                            lead: "Phần III.1 – Hoạt động PKND thời bình (Slide 02 – 12):",
+                            text: "Phân tích cặn kẽ 4 trụ cột chuẩn bị từ sớm, từ xa gồm tổ chức chỉ đạo và kế hoạch (1a), tuyên truyền giáo dục (1b), huấn luyện diễn tập (1c) và xây dựng công trình (1d)."
+                        },
+                        {
+                            lead: "Phần III.2 – Hoạt động PKND thời chiến (Slide 13 – 22):",
+                            text: "Làm rõ 4 nhiệm vụ sống còn khi chuyển trạng thái chiến tranh: trinh sát báo động (2a), sơ tán phân tán (2b), toàn dân đánh địch (2c) và khắc phục hậu quả (2d)."
+                        },
+                        {
+                            lead: "Điểm nhấn lịch sử và hiện đại:",
+                            text: "Kết nối chiến công của Dân quân Nguyễn Đình Cận (bắn rơi F-111A), Anh hùng Phạm Tuân (bắn rơi B-52) và bài toán chống UAV hiện nay."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 02 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "TƯ TƯỞNG CHIẾN LƯỢC MỞ ĐẦU PHẦN III.1 • DI CHÚC VUA LÊ THÁI TỔ",
+                title: "“Lo Giữ Nước Từ Khi Nước Chưa Nguy” & Vai Trò PKND Thời Bình",
+                leadLabel: "LỜI DẪN VÀO PHẦN III – MỤC 1 NHỎ",
+                leadText: "Trước khi qua đời, Vua Lê Thái Tổ (Lê Lợi) đã để lại lời di chúc răn dạy con cháu muôn đời: “Lo giữ nước từ khi nước chưa nguy”. Trong tác chiến phòng không, một giây chậm trễ khi bom đạn đã rơi đồng nghĩa với tổn thất khôn lường. Vì vậy, hoạt động Phòng không nhân dân thời bình là yếu tố hết sức quan trọng và tuyệt đối không được phép bỏ qua.",
+                layout: "standard",
+                card1: {
+                    badge: "VÌ SAO PHẢI CHUẨN BỊ TỪ THỜI BÌNH?",
+                    heading: "Không có cơ hội sửa sai khi tiếng còi báo động vang lên",
+                    points: [
+                        {
+                            lead: "Đặc điểm tiến công đường không của địch:",
+                            text: "Luôn giữ bí mật, tạo yếu tố bất ngờ ngay từ đầu, đánh phá đồng loạt, ác liệt cả ngày lẫn đêm với tốc độ tính bằng giây."
+                        },
+                        {
+                            lead: "Tính chất phức tạp của công tác chuẩn bị:",
+                            text: "Việc thành lập bộ máy chỉ huy, quy hoạch đô thị lưỡng dụng, đào tạo kỹ năng và xây dựng hầm hào kiên cố đòi hỏi thời gian dài và sự đầu tư đồng bộ."
+                        },
+                        {
+                            lead: "Chủ động làm chủ thế trận:",
+                            text: "Chuẩn bị chu đáo ngay khi đất nước hòa bình giúp toàn dân không rơi vào tâm lý hoang mang, bị động khi tình huống xấu xảy ra."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "4 TRỤ CỘT HOẠT ĐỘNG PKND THỜI BÌNH (SGK)",
+                    heading: "Nền móng vững chắc từ Trung ương đến cơ sở",
+                    points: [
+                        {
+                            lead: "Trụ cột 1 (Mục 1a):",
+                            text: "Thành lập Ban chỉ đạo phòng không nhân dân 4 cấp và xây dựng hệ thống kế hoạch, đề án, dự án bảo đảm tiêu chuẩn an toàn PKND."
+                        },
+                        {
+                            lead: "Trụ cột 2 (Mục 1b):",
+                            text: "Tuyên truyền, giáo dục sâu rộng kiến thức và kỹ năng phòng tránh, đánh địch trên không cho toàn dân, trọng tâm là học sinh, sinh viên."
+                        },
+                        {
+                            lead: "Trụ cột 3 và 4 (Mục 1c và 1d):",
+                            text: "Tổ chức huấn luyện cả ngày lẫn đêm, diễn tập thực binh và xây dựng đài quan sát, hầm hào trú ẩn, công trình nghi binh, trận địa phòng không."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 03 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "MỤC 1a (PHẦN 1) • HỆ THỐNG TỔ CHỨC CHỈ ĐẠO",
+                title: "1a) Thành Lập Ban Chỉ Đạo Phòng Không Nhân Dân 4 Cấp",
+                leadLabel: "LỜI DẪN MỤC 1a (PHẦN 1)",
+                leadText: "Đầu tiên, muốn một thế trận rộng lớn của hàng triệu người dân vận hành thống nhất, nhịp nhàng thì bắt buộc phải có bộ não chỉ huy xuyên suốt. Vì vậy, Ban chỉ đạo Phòng không nhân dân được tổ chức thành lập chặt chẽ ở 4 cấp từ Trung ương xuống đến các địa bàn trọng điểm.",
+                layout: "standard",
+                card1: {
+                    badge: "CẤP VĨ MÔ & LIÊN TỈNH (CẤP 1 & CẤP 2)",
+                    heading: "Ban chỉ đạo Cấp Trung ương & Cấp Quân khu",
+                    points: [
+                        {
+                            lead: "Cấp 1 – Ban chỉ đạo Phòng không nhân dân Trung ương:",
+                            text: "Giữ vai trò cao nhất, tham mưu cho Chính phủ chỉ đạo, điều hành công tác phòng không nhân dân thống nhất trên phạm vi toàn quốc."
+                        },
+                        {
+                            lead: "Cấp 2 – Ban chỉ đạo Phòng không nhân dân cấp Quân khu:",
+                            text: "Tổ chức chỉ đạo, điều phối hiệp đồng tác chiến phòng không liên tỉnh trên địa bàn Quân khu (ví dụ: Quân khu 7 quản lý địa bàn Đông Nam Bộ)."
+                        },
+                        {
+                            lead: "Vai trò kết nối chiến lược:",
+                            text: "Bảo đảm sự hiệp đồng tác chiến chặt chẽ giữa lực lượng phòng không nhân dân địa phương với Bộ đội Phòng không - Không quân chủ lực."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "CẤP ĐỊA PHƯƠNG TRỌNG ĐIỂM (CẤP 3 & CẤP 4)",
+                    heading: "Cấp Tỉnh & Cấp Huyện thuộc địa bàn trọng điểm",
+                    points: [
+                        {
+                            lead: "Cấp 3 – Cấp Tỉnh, thành phố trực thuộc Trung ương (gọi chung là cấp tỉnh):",
+                            text: "Ví dụ như Ban chỉ đạo PKND tỉnh Đồng Nai, chịu trách nhiệm chỉ đạo toàn diện công tác PKND trên địa bàn tỉnh."
+                        },
+                        {
+                            lead: "Cấp 4 – Cấp Huyện, quận, thị xã, thành phố thuộc tỉnh (gọi chung là cấp huyện) thuộc địa bàn trọng điểm PKND:",
+                            text: "Ví dụ như TP. Biên Hòa — nơi có sân bay quân sự, khu công nghiệp và đầu mối giao thông trọng yếu."
+                        },
+                        {
+                            lead: "Nhiệm vụ trực tiếp tại cơ sở:",
+                            text: "Nắm chắc từng tuyến phố, khu dân cư, quản lý lực lượng dân quân tự vệ và hệ thống công trình trú ẩn trên địa bàn."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 04 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "MỤC 1a (PHẦN 2) • KẾ HOẠCH TÁC CHIẾN & QUY HOẠCH LƯỠNG DỤNG",
+                title: "1a) Xây Dựng Kế Hoạch & Quy Hoạch Đề Án An Toàn PKND",
+                leadLabel: "LỜI DẪN MỤC 1a (PHẦN 2)",
+                leadText: "Sau khi kiện toàn bộ máy chỉ đạo 4 cấp, nhiệm vụ tiếp theo của Mục 1a là xây dựng hệ thống kế hoạch tác chiến ngay từ thời bình và lồng ghép các tiêu chuẩn an toàn phòng không ngay trong quá trình quy hoạch, xây dựng các công trình dân sinh – kinh tế.",
+                layout: "standard",
+                card1: {
+                    badge: "KẾ HOẠCH PHÒNG KHÔNG NHÂN DÂN 4 CẤP",
+                    heading: "Xây dựng từ thời bình & Bổ sung kịp thời",
+                    points: [
+                        {
+                            lead: "Phạm vi xây dựng:",
+                            text: "Kế hoạch phòng không nhân dân được xây dựng hoàn chỉnh ngay từ thời bình ở 4 cấp: Cấp quân khu, cấp tỉnh, cấp huyện và cấp xã."
+                        },
+                        {
+                            lead: "Nội dung cốt lõi:",
+                            text: "Xác định rõ các mục tiêu cần bảo vệ, tuyến đường sơ tán nhân dân, khu vực phân tán cơ quan nhà máy và phương án bố trí hỏa lực đánh địch."
+                        },
+                        {
+                            lead: "Tính linh hoạt, cập nhật:",
+                            text: "Kế hoạch không nằm bất động trên giấy mà phải được kịp thời điều chỉnh, bổ sung khi tình hình thay đổi (sự mở rộng đô thị và vũ khí công nghệ cao mới)."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "QUY HOẠCH ĐỀ ÁN, DỰ ÁN LƯỠNG DỤNG",
+                    heading: "Bảo đảm tiêu chuẩn PKND & Phòng thủ dân sự",
+                    points: [
+                        {
+                            lead: "Nguyên tắc quy hoạch:",
+                            text: "Xây dựng quy hoạch các đề án, dự án phát triển kinh tế - xã hội phải đảm bảo tiêu chuẩn an toàn về phòng không nhân dân và phòng thủ dân sự."
+                        },
+                        {
+                            lead: "Công trình lưỡng dụng hiện đại:",
+                            text: "Tầng hầm của các tòa nhà cao tầng, trung tâm thương mại, bệnh viện thời bình dùng làm bãi đỗ xe, kho hàng; khi có chiến sự lập tức chuyển thành hầm trú ẩn kiên cố cho hàng nghìn người."
+                        },
+                        {
+                            lead: "Liên hệ thực tế Biên Hòa:",
+                            text: "Mọi dự án xây dựng quanh khu vực Sân bay Biên Hòa đều phải tuân thủ nghiêm ngặt quy định về độ cao tĩnh không và vùng cấm bay."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 05 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "MỤC 1b (PHẦN 1) • ĐỐI TƯỢNG & NHẬN DIỆN THỦ ĐOẠN ĐỊCH",
+                title: "1b) Tuyên Truyền, Giáo Dục PKND: Đối Tượng & Thủ Đoạn Địch",
+                leadLabel: "LỜI DẪN MỤC 1b (PHẦN 1)",
+                leadText: "Có ban chỉ đạo và kế hoạch chặt chẽ rồi, nhưng nếu người dân thiếu hiểu biết hoặc hoảng loạn khi có tình huống xảy ra thì thế trận không thể phát huy sức mạnh. Vì vậy, công tác tuyên truyền, giáo dục phải đi trước một bước để trang bị nhận thức đúng đắn cho toàn dân, đặc biệt là thế hệ trẻ.",
+                layout: "standard",
+                card1: {
+                    badge: "ĐỐI TƯỢNG TUYÊN TRUYỀN, GIÁO DỤC (SGK TRANG 31)",
+                    heading: "Toàn dân – Trọng tâm nhất là Học sinh, Sinh viên",
+                    points: [
+                        {
+                            lead: "Phạm vi toàn dân:",
+                            text: "Tuyên truyền, giáo dục về công tác phòng không nhân dân được triển khai sâu rộng cho tất cả các đối tượng, mọi tầng lớp nhân dân trong xã hội."
+                        },
+                        {
+                            lead: "Đối tượng trọng tâm nhất:",
+                            text: "Đặc biệt chú trọng học sinh, sinh viên trong các nhà trường thông qua môn học Giáo dục Quốc phòng và An ninh và các hoạt động ngoại khóa."
+                        },
+                        {
+                            lead: "Sức lan tỏa cộng đồng:",
+                            text: "Khi mỗi học sinh lớp 11 nắm vững kiến thức phòng không nhân dân, các bạn chính là những tuyên truyền viên tích cực hướng dẫn lại cho gia đình."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "NHẬN DIỆN THỦ ĐOẠN & PHƯƠNG TIỆN TIẾN CÔNG ĐỊCH",
+                    heading: "Hiểu rõ quy luật tập kích đường không hiện đại",
+                    points: [
+                        {
+                            lead: "Nhận diện thủ đoạn đánh phá:",
+                            text: "Giúp nhân dân hiểu rõ quy luật tiến công đường không của địch (tình báo trinh sát kỹ, đánh bất ngờ, ồ ạt cả ngày lẫn đêm, kết hợp chiến tranh tâm lý)."
+                        },
+                        {
+                            lead: "Nhận diện phương tiện tiến công đường không:",
+                            text: "Nắm được đặc điểm, tính năng cơ bản của máy bay chiến đấu, máy bay ném bom chiến lược, trực thăng vũ trang, tên lửa hành trình và UAV."
+                        },
+                        {
+                            lead: "Xóa bỏ tâm lý chủ quan:",
+                            text: "Xây dựng ý thức cảnh giác thường trực ngay trong thời bình, không lơ là trước mọi diễn biến phức tạp trên bầu trời."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 06 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "MỤC 1b (PHẦN 2) • TÍN HIỆU BÁO ĐỘNG & KỸ NĂNG SINH TỒN",
+                title: "1b) Tuyên Truyền Tín Hiệu Báo Động & Kỹ Năng Sinh Tồn",
+                leadLabel: "LỜI DẪN MỤC 1b (PHẦN 2)",
+                leadText: "Không chỉ dừng lại ở nhận thức chung, Sách giáo khoa trang 31 quy định rất cụ thể các nội dung kỹ năng thực hành mà mọi người dân đều phải thành thạo: từ việc phân biệt từng hồi còi báo động cho đến quy cách đào hầm và kỹ thuật cứu hộ, cứu nạn tại chỗ.",
+                layout: "standard",
+                figures: [
+                    {
+                        file: "5.2",
+                        label: "HÌNH 5.2 SGK (TRANG 31)",
+                        caption: "Những hình ảnh tư liệu được trưng bày triển lãm kỉ niệm chiến thắng “Điện Biên Phủ trên không” (2020)."
+                    }
+                ],
+                card1: {
+                    badge: "QUY ƯỚC BÁO ĐỘNG & QUY CÁCH HẦM HỐ",
+                    heading: "Tín hiệu thông báo, hầm trú ẩn & Ngụy trang sơ tán",
+                    points: [
+                        {
+                            lead: "Tín hiệu thông báo, báo động phòng không nhân dân:",
+                            text: "Phân biệt chính xác từng hồi còi báo động khẩn cấp, tiếng kẻng, loa phát thanh báo địch sắp đến hay báo yên để hành động đúng từng giây."
+                        },
+                        {
+                            lead: "Quy cách hầm, hố cho cá nhân và tập thể:",
+                            text: "Nắm vững kích thước, độ sâu, vật liệu gia cố nắp hầm chống sập và mảnh bom đạn."
+                        },
+                        {
+                            lead: "Biện pháp ngụy trang, phòng tránh, sơ tán:",
+                            text: "Biết cách che chắn ánh sáng ban đêm, ngụy trang công trình, phương tiện và tuân thủ kỷ luật sơ tán."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "KỸ NĂNG CỨU HỘ & GIÁO DỤC TRUYỀN THỐNG",
+                    heading: "Cứu thương, cứu sập, chữa cháy & Bài học 1972",
+                    points: [
+                        {
+                            lead: "Phương pháp xử trí tình huống khẩn cấp:",
+                            text: "Thành thạo kỹ năng cơ bản về cứu thương, cứu sập, chữa cháy và phòng chống vũ khí hủy diệt lớn ngay tại cơ sở."
+                        },
+                        {
+                            lead: "Phát huy truyền thống lịch sử hào hùng:",
+                            text: "Thông qua các hoạt động giáo dục trực quan như triển lãm kỉ niệm chiến thắng “Điện Biên Phủ trên không” năm 2020 (Hình 5.2 SGK), khơi dậy niềm tự hào dân tộc."
+                        },
+                        {
+                            lead: "Bản lĩnh tâm lý vững vàng:",
+                            text: "Trang bị kiến thức khoa học giúp nhân dân bình tĩnh xử trí mọi tình huống bom đạn."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 07 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "MỤC 1c (PHẦN 1) • TỔ CHỨC HUẤN LUYỆN PHÒNG KHÔNG NHÂN DÂN",
+                title: "1c) Tổ Chức Huấn Luyện Phòng Không Nhân Dân Ngày & Đêm",
+                leadLabel: "LỜI DẪN MỤC 1c (PHẦN 1)",
+                leadText: "Chỉ tuyên truyền và học lý thuyết trên sách vở thôi là chưa đủ. Để kiến thức biến thành phản xạ chiến đấu chuẩn xác trong khói lửa chiến tranh, các lực lượng tham gia phòng không nhân dân phải được tổ chức huấn luyện bài bản cả ngày lẫn đêm.",
+                layout: "standard",
+                card1: {
+                    badge: "PHƯƠNG CHÂM & THỜI GIAN HUẤN LUYỆN (SGK TRANG 31)",
+                    heading: "Huấn luyện cả Ngày và Đêm (Coi trọng huấn luyện đêm)",
+                    points: [
+                        {
+                            lead: "Mục tiêu huấn luyện:",
+                            text: "Nâng cao khả năng sẵn sàng chiến đấu và trình độ hiệp đồng cho tất cả các lực lượng tham gia công tác phòng không nhân dân."
+                        },
+                        {
+                            lead: "Thời gian huấn luyện:",
+                            text: "Được tiến hành nghiêm túc cả ban ngày và ban đêm trong nhiều điều kiện địa hình, thời tiết phức tạp."
+                        },
+                        {
+                            lead: "Tại sao phải chú trọng huấn luyện đêm?",
+                            text: "Bởi trong chiến tranh hiện đại, kẻ thù luôn lợi dụng bóng tối để tập kích đường không bất ngờ nhằm hạn chế khả năng quan sát bằng mắt thường của ta."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "NỘI DUNG HUẤN LUYỆN KỸ - CHIẾN THUẬT NỀN TẢNG",
+                    heading: "Nắm vũ khí địch, Xây hầm hào & Chống tác chiến điện tử",
+                    points: [
+                        {
+                            lead: "Nắm vững tính năng vũ khí địch:",
+                            text: "Huấn luyện tính năng, kĩ - chiến thuật của các loại vũ khí, phương tiện tiến công đường không của kẻ thù."
+                        },
+                        {
+                            lead: "Phương pháp xây dựng công trình phòng tránh:",
+                            text: "Thực hành kỹ thuật đào và gia cố hệ thống hầm, hào, công trình phòng tránh, sơ tán đạt chuẩn an toàn."
+                        },
+                        {
+                            lead: "Chống trinh sát và Tác chiến điện tử:",
+                            text: "Rèn luyện biện pháp ngụy trang chống trinh sát vệ tinh/UAV của kẻ thù và cách khắc phục khi bị địch gây nhiễu điện tử."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 08 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "MỤC 1c (PHẦN 2) • KỸ CHIẾN THUẬT ĐÁNH MỤC TIÊU & DIỄN TẬP PKND",
+                title: "1c) Kỹ Chiến Thuật Đánh Mục Tiêu & Tổ Chức Diễn Tập PKND",
+                leadLabel: "LỜI DẪN MỤC 1c (PHẦN 2)",
+                leadText: "Bên cạnh rèn luyện kỹ thuật cơ bản, lực lượng phòng không nhân dân còn được huấn luyện chuyên sâu cách bắn hạ các mục tiêu bay thấp của địch và bước vào kiểm tra tổng hợp qua các cuộc diễn tập thực binh quy mô lớn.",
+                layout: "standard",
+                figures: [
+                    {
+                        file: "5.3",
+                        label: "HÌNH 5.3 SGK (TRANG 32)",
+                        caption: "Trận địa pháo phòng không trong diễn tập khu vực phòng thủ – Hưng Yên (2022)."
+                    }
+                ],
+                card1: {
+                    badge: "HUẤN LUYỆN CÁCH ĐÁNH ĐỊCH TRÊN KHÔNG (SGK TRANG 31)",
+                    heading: "Đánh máy bay bay thấp, Tên lửa hành trình & Trực thăng",
+                    points: [
+                        {
+                            lead: "Đánh các mục tiêu bay thấp:",
+                            text: "Tập trung huấn luyện cách đánh máy bay bay thấp, tên lửa hành trình, đánh máy bay trực thăng đổ bộ đường không của địch."
+                        },
+                        {
+                            lead: "Đánh máy bay cứu giặc lái:",
+                            text: "Luyện tập phương án phục kích tiêu diệt máy bay trực thăng địch bay vào cứu phi công nhảy dù."
+                        },
+                        {
+                            lead: "Khôi phục sức chiến đấu:",
+                            text: "Thành thạo các biện pháp, phương pháp khắc phục hậu quả và nhanh chóng khôi phục sức chiến đấu sau mỗi đợt tập kích."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "2 HÌNH THỨC & 5 NỘI DUNG DIỄN TẬP (SGK TRANG 32)",
+                    heading: "Diễn tập Chỉ huy – Tham mưu & Khu vực phòng thủ",
+                    points: [
+                        {
+                            lead: "2 hình thức diễn tập:",
+                            text: "Diễn tập phòng không nhân dân độc lập hoặc diễn tập PKND kết hợp với diễn tập khu vực phòng thủ của địa phương (như Hình 5.3 SGK tại Hưng Yên năm 2022)."
+                        },
+                        {
+                            lead: "5 nội dung diễn tập đồng bộ:",
+                            text: "(1) Diễn tập chỉ huy – tham mưu các cấp; (2) Tổ chức trinh sát, thông báo, báo động phòng không; (3) Tổ chức ngụy trang, sơ tán, phân tán, phòng tránh."
+                        },
+                        {
+                            lead: "Thực binh đánh trả và cứu hộ:",
+                            text: "(4) Tổ chức đánh trả địch xâm nhập tiến công đường không; (5) Tổ chức khắc phục hậu quả."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 09 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "MỤC 1d (PHẦN 1) • ĐÀI QUAN SÁT, HẦM HÀO & MŨ RƠM SÁNG TẠO",
+                title: "1d) Xây Dựng Công Trình: Đài Quan Sát, Hầm Hào & Mũ Rơm Sáng Tạo",
+                leadLabel: "LỜI DẪN MỤC 1d (PHẦN 1)",
+                leadText: "Song song với yếu tố con người, trụ cột thứ tư của thời bình là xây dựng hệ thống công trình phòng không nhân dân trên thực địa — bao gồm mạng lưới đài quan sát cảnh giới từ xa và hệ thống hầm hào, phương tiện phòng tránh bảo vệ an toàn tính mạng nhân dân.",
+                layout: "standard",
+                figures: [
+                    {
+                        file: "5.4a",
+                        label: "HÌNH 5.4A SGK (TRANG 32)",
+                        caption: "Đào hào phòng tránh địch đánh bom trong kháng chiến chống Mỹ (1972)."
+                    },
+                    {
+                        file: "5.4b",
+                        label: "HÌNH 5.4B SGK (TRANG 32)",
+                        caption: "Đan mũ rơm phòng tránh mảnh bom bi, gạch đá văng trong kháng chiến chống Mỹ (1972)."
+                    }
+                ],
+                card1: {
+                    badge: "HỆ THỐNG CẢNH GIỚI TỪ XA (SGK TRANG 32)",
+                    heading: "Đài quan sát, thông báo & báo động PKND",
+                    points: [
+                        {
+                            lead: "Bố trí đài quan sát:",
+                            text: "Xây dựng hệ thống các đài quan sát, thông báo, báo động phòng không nhân dân tại các điểm cao, vị trí có tầm nhìn bao quát."
+                        },
+                        {
+                            lead: "Nhiệm vụ trực chiến:",
+                            text: "Luôn ở tư thế sẵn sàng phát hiện máy bay, tên lửa hành trình và UAV của địch từ xa, kể cả khi địch bay thấp dưới tầm sóng radar."
+                        },
+                        {
+                            lead: "Mạng lưới truyền tin rộng khắp:",
+                            text: "Kịp thời thông báo báo động phòng không nhân dân trong toàn khu vực thông qua hệ thống loa truyền thanh, còi điện, kẻng báo động."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "CÔNG TRÌNH TRÚ ẨN & SÁNG TẠO DÂN GIAN",
+                    heading: "Hầm hào nơi đông người & Mũ rơm, áo rơm",
+                    points: [
+                        {
+                            lead: "Xây dựng hầm, hào, công sự phòng tránh:",
+                            text: "Bố trí cho tập thể và cá nhân tại nhà, nơi làm việc, nơi công cộng, trên đường đi; đặc biệt chú trọng trường học, bệnh viện, chợ, nhà ga, sân bay, bến cảng."
+                        },
+                        {
+                            lead: "Vận dụng sáng tạo biện pháp phòng tránh:",
+                            text: "Phát huy trí tuệ nhân dân như đào hào giao thông và đan mũ rơm, áo rơm dày dặn giúp chống mảnh bom bi, gạch đá văng (Hình 5.4a và 5.4b SGK)."
+                        },
+                        {
+                            lead: "Bảo vệ tài sản và vũ khí:",
+                            text: "Tận dụng các vật liệu tự nhiên sẵn có tại địa phương như tre, nứa để che đậy, ngụy trang bảo vệ vũ khí và phương tiện sản xuất."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 10 --------------------
+            {
+                section: "III.1. PKND THỜI BÌNH",
+                partSub: "MỤC 1d (PHẦN 2) • CÔNG TRÌNH NGHI BINH & TRẬN ĐỊA PHÒNG KHÔNG",
+                title: "1d) Xây Dựng Vị Trí Sơ Tán, Nghi Binh & Trận Địa Dự Bị",
+                leadLabel: "LỜI DẪN MỤC 1d (PHẦN 2)",
+                leadText: "Không chỉ lo hầm hào trú ẩn cho người dân, việc xây dựng công trình phòng không nhân dân trong thời bình còn bao gồm quy hoạch các khu sơ tán an toàn, các công trình ngụy trang nghi binh đánh lừa trinh sát địch và hệ thống trận địa hỏa lực chính thức, dự bị.",
+                layout: "standard",
+                card1: {
+                    badge: "BẢO ĐẢM BÍ MẬT & PHÂN TÁN HỎA LỰC ĐỊCH",
+                    heading: "Vị trí sơ tán & Công trình ngụy trang, nghi binh",
+                    points: [
+                        {
+                            lead: "Xây dựng vị trí sơ tán, phân tán:",
+                            text: "Chuẩn bị sẵn các địa điểm an toàn ở vùng ngoại vi, vùng nông thôn xa mục tiêu quân sự để sẵn sàng đón nhân dân, trường học và cơ quan khi có chiến sự."
+                        },
+                        {
+                            lead: "Xây dựng công trình ngụy trang, nghi binh:",
+                            text: "Sử dụng lưới ngụy trang, mô hình giả, trận địa giả nhằm bảo đảm bí mật, phòng, tránh sự đánh phá của địch."
+                        },
+                        {
+                            lead: "Hiệu quả chiến thuật:",
+                            text: "Đánh lừa vệ tinh và máy bay trinh sát của đối phương, khiến địch lãng phí bom đạn vào mục tiêu giả và bảo toàn lực lượng thật của ta."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "HẠ TẦNG HỎA LỰC ĐÁNH ĐỊCH TRÊN KHÔNG",
+                    heading: "Hệ thống Trận địa Chính thức & Trận địa Dự bị",
+                    points: [
+                        {
+                            lead: "Xây dựng hệ thống các trận địa phòng không:",
+                            text: "Bố trí công sự pháo cao xạ, súng máy phòng không 12,7mm, 14,5mm tại các hướng bay trọng điểm để đánh địch tiến công hỏa lực đường không."
+                        },
+                        {
+                            lead: "Kết hợp trận địa chính thức và trận địa dự bị:",
+                            text: "Mỗi đơn vị phòng không đều phải chuẩn bị song song cả trận địa chính thức lẫn nhiều trận địa dự bị xung quanh."
+                        },
+                        {
+                            lead: "Nghệ thuật đánh xong cơ động ngay:",
+                            text: "Sau mỗi loạt bắn hạ máy bay địch, khẩu đội lập tức di chuyển sang trận địa dự bị để tránh bị máy bay địch phản kích vào vị trí cũ."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 11 --------------------
+            {
+                section: "TỔNG KẾT THỜI BÌNH",
+                partSub: "TỔNG KẾT MỤC III.1 & GIỚI THIỆU VIDEO MINH HỌA 01",
+                title: "Tổng Kết PKND Thời Bình & Quản Lý Vùng Trời Hiện Nay",
+                leadLabel: "LỜI DẪN TỔNG KẾT PHẦN 1 & GIỚI THIỆU VIDEO 01",
+                leadText: "Như vậy, toàn bộ 4 nội dung hoạt động Phòng không nhân dân thời bình đều hướng tới mục tiêu: Chuẩn bị từ sớm, từ xa để luôn ở thế chủ động. Ngay tại Biên Hòa – Đồng Nai hôm nay, sự hiệp đồng giữa Trung đoàn Không quân 935 (Sư đoàn 370) và mạng lưới PKND địa phương chính là minh chứng sống động nhất. Mời thầy và các bạn theo dõi Video 1 ngay sau đây.",
+                layout: "standard",
+                card1: {
+                    badge: "HỆ THỐNG HÓA 4 TRỤ CỘT THỜI BÌNH",
+                    heading: "Tổ chức chặt chẽ – Nhận thức sâu – Luyện tập kỹ – Hạ tầng vững",
+                    points: [
+                        {
+                            lead: "1. Tổ chức và Kế hoạch (1a):",
+                            text: "Ban chỉ đạo PKND 4 cấp vận hành thống nhất; kế hoạch tác chiến cập nhật thường xuyên và quy hoạch đô thị, khu công nghiệp bảo đảm tiêu chuẩn lưỡng dụng."
+                        },
+                        {
+                            lead: "2. Tuyên truyền và Huấn luyện (1b, 1c):",
+                            text: "Học sinh, sinh viên và toàn dân nắm vững tín hiệu báo động, kỹ năng trú ẩn; lực lượng nòng cốt huấn luyện cả ngày lẫn đêm và diễn tập khu vực phòng thủ."
+                        },
+                        {
+                            lead: "3. Công trình phòng không (1d):",
+                            text: "Đài quan sát cảnh giới từ xa, hầm hào trú ẩn, công trình nghi binh và hệ thống trận địa chính thức – dự bị sẵn sàng kích hoạt."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "QUẢN LÝ VÙNG TRỜI & DIỄN TẬP HIỆP ĐỒNG",
+                    heading: "Sư đoàn 370 / Trung đoàn 935 & Lưới lửa PKND Đồng Nai",
+                    points: [
+                        {
+                            lead: "Trực ban chiến đấu 24/24 tại Sân bay Biên Hòa:",
+                            text: "Các biên đội tiêm kích Su-30MK2 thuộc Trung đoàn Không quân 935 (Sư đoàn 370) ngày đêm tuần tra, huấn luyện đánh chặn bảo vệ vùng trời phía Nam."
+                        },
+                        {
+                            lead: "Hiệp đồng khu vực phòng thủ địa phương:",
+                            text: "Lực lượng pháo phòng không, súng máy 12,7mm dân quân tự vệ tỉnh Đồng Nai thường xuyên diễn tập bắn mục tiêu bay thấp bảo vệ các khu công nghiệp và sân bay."
+                        },
+                        {
+                            lead: "Kết nối sang Video 1:",
+                            text: "Cùng quan sát hình ảnh radar cảnh giới, sở chỉ huy quản lý vùng trời và thực hành diễn tập hiệp đồng trong thời bình."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 12 --------------------
+            {
+                section: "VIDEO MINH HỌA 01",
+                partSub: "TRỰC QUAN HÓA HOẠT ĐỘNG QUẢN LÝ VÙNG TRỜI & DIỄN TẬP THỜI BÌNH",
+                title: "Video 1: Huấn Luyện Bay & Sẵn Sàng Chiến Đấu Tại Trung Đoàn 935",
+                leadLabel: "LỜI DẪN CHIẾU VIDEO 01 (THỜI BÌNH)",
+                leadText: "Để thấy rõ sự chuẩn bị nghiêm ngặt trong thời bình, mời thầy và các bạn theo dõi phóng sự tại Trung đoàn Không quân 935 (Sư đoàn 370) đóng quân ngay tại Sân bay Biên Hòa. Cán bộ, phi công ngày đêm miệt mài bay nguội trên sa bàn, luyện tập trong buồng lái giả lập 3D và thực hành bay tiêm kích đa năng Su-30MK2, sẵn sàng xử lý mọi tình huống bất ngờ để bảo vệ vững chắc vùng trời, vùng biển, thềm lục địa phía Nam và quần đảo Trường Sa của Tổ quốc.",
+                layout: "video",
+                iframeId: "yt-player-1",
+                iframeTitle: "Huấn luyện bay, sẵn sàng chiến đấu tại Trung đoàn Không quân 935",
+                embedUrl: "https://www.youtube.com/embed/SjUXp7FB5XA?rel=0",
+                watchUrl: "https://www.youtube.com/watch?v=SjUXp7FB5XA",
+                videoBadge: "TƯ LIỆU THỜI BÌNH • TRUNG ĐOÀN KHÔNG QUÂN 935 (SÂN BAY BIÊN HÒA)",
+                videoCaption: "Phóng sự Đài PTTH Đồng Nai: Huấn luyện bay, sẵn sàng chiến đấu bảo vệ vùng trời phía Nam.",
+                analysisCard: {
+                    badge: "TRỌNG TÂM QUAN SÁT & PHÂN TÍCH CHIẾN THUẬT",
+                    heading: "3 Trọng Tâm Chuẩn Bị Thời Bình",
+                    points: [
+                        {
+                            lead: "1. Huấn luyện bài bản từ mặt đất lên bầu trời:",
+                            text: "Phi công luyện tập thuần thục từ bay nguội trên sa bàn, buồng lái mô phỏng 3D cho đến thực hành bay đội hình phức tạp trên tiêm kích đa năng Su-30MK2."
+                        },
+                        {
+                            lead: "2. Sẵn sàng xử lý tình huống ngoài giáo án:",
+                            text: "Các khoa mục bay huấn luyện cả ngày lẫn đêm đều đặt ra tình huống tác chiến đột xuất, rèn bản lĩnh không để bị bất ngờ trước mọi thủ đoạn xâm nhập đường không."
+                        },
+                        {
+                            lead: "3. Hiệp đồng lá chắn chủ lực và PKND địa phương:",
+                            text: "Sức mạnh tuần tra tầm cao của Trung đoàn 935 kết hợp chặt chẽ với mạng lưới radar cảnh giới và lưới lửa PKND Đồng Nai tạo nên thế trận phòng thủ liên hoàn vững chắc."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 13 --------------------
+            {
+                section: "VIDEO MINH HỌA 02",
+                partSub: "CHUYỂN TRẠNG THÁI SANG MỤC 2: HOẠT ĐỘNG PKND THỜI CHIẾN",
+                title: "Video 2: Hậu Quả Tàn Khốc Của Tiến Công Đường Không Năm 1972",
+                leadLabel: "LỜI DẪN CHIẾU VIDEO 02 (HẬU QUẢ THỜI CHIẾN & CHUYỂN SANG PHẦN 2)",
+                leadText: "Vừa rồi là sự chuẩn bị nghiêm ngặt trong thời bình. Nhưng khi chiến tranh thực sự ập đến, sức hủy diệt của hỏa lực đường không tàn khốc đến mức nào? Mời thầy và các bạn theo dõi thước phim tư liệu lịch sử ghi lại hậu quả sau một trận ném bom xuống miền Bắc nước ta năm 1972: bến cảng, phố xá tan hoang thành đống gạch vụn, những người dân vô tội mang thương tích đầy mình phải sống và điều trị dưới lòng hầm tối. Chính những mất mát đau thương này là lời cảnh tỉnh đanh thép nhất: nếu không có phương án ứng phó bài bản, cái giá phải trả sẽ là sinh mạng của đồng bào. Và đó cũng chính là lý do ngay khi tiếng còi báo động vang lên, toàn bộ thế trận phải lập tức chuyển sang Phần 2 nhỏ: Hoạt động phòng không nhân dân thời chiến.",
+                layout: "video",
+                iframeId: "yt-player-2",
+                iframeTitle: "Tư liệu hậu quả không kích năm 1972",
+                embedUrl: "https://www.youtube.com/embed/j1kOeGAAPIs?rel=0",
+                watchUrl: "https://www.youtube.com/watch?v=j1kOeGAAPIs",
+                videoBadge: "TƯ LIỆU LỊCH SỬ (30/10/1972) • HẬU QUẢ NÉM BOM MIỀN BẮC VIỆT NAM",
+                videoCaption: "Tư liệu lịch sử AP Archive (1972): Cảnh đổ nát sau trận không kích và cuộc sống, điều trị dưới hầm trú ẩn.",
+                analysisCard: {
+                    badge: "CHUYỂN TIẾP SANG 4 NHIỆM VỤ PKND THỜI CHIẾN (MỤC 2)",
+                    heading: "Từ Hậu Quả Thảm Khốc Đến 4 Nhiệm Vụ Sống Còn",
+                    points: [
+                        {
+                            lead: "1. Phố xá, cảng biển bị hủy diệt → Bắt buộc Trinh sát sớm (2a) và Sơ tán (2b):",
+                            text: "Bom đạn trút xuống bất ngờ biến khu dân cư thành đống gạch vụn, đòi hỏi phải phát hiện địch từ xa, báo động kịp thời và tổ chức sơ tán người già, trẻ nhỏ khỏi vùng trọng điểm."
+                        },
+                        {
+                            lead: "2. Người dân bị thương, nhà cửa sập đổ → Cần Cứu sập, cứu thương tại chỗ (2d):",
+                            text: "Hình ảnh đồng bào điều trị dưới hầm tối cho thấy sự sống còn của lực lượng cứu sập dân quân tự vệ, 4 tuyến y tế cứu thương và công tác ổn định đời sống sau trận đánh."
+                        },
+                        {
+                            lead: "3. Muốn chấm dứt cảnh bom rơi đạn nổ → Phải Toàn dân đánh địch (2c):",
+                            text: "Không thể chỉ chịu đựng thụ động, toàn dân phải giăng lưới lửa tầm thấp kết hợp bộ đội chủ lực bắn rơi máy bay địch, bảo vệ bầu trời Tổ quốc."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 14 --------------------
+            {
+                section: "III.2. PKND THỜI CHIẾN",
+                partSub: "MỤC 2a (SGK TRANG 32 - 33) • TRINH SÁT, QUAN SÁT & THÔNG BÁO, BÁO ĐỘNG",
+                title: "2a) Tổ Chức Trinh Sát, Quan Sát & Thông Báo, Báo Động PKND",
+                leadLabel: "LỜI DẪN MỤC 2a (MỞ ĐẦU HOẠT ĐỘNG PKND THỜI CHIẾN)",
+                leadText: "Như thầy và các bạn vừa thấy qua Video 2, tiến công đường không diễn ra vô cùng khốc liệt, bất ngờ cả ngày lẫn đêm. Khi chuyển sang thời chiến, cùng với việc thực hiện đầy đủ nội dung thời bình, nhiệm vụ sống còn đầu tiên (Mục 2a) là tổ chức trinh sát, quan sát và báo động kịp thời tới từng người dân.",
+                layout: "standard",
+                card1: {
+                    badge: "MẠNG LƯỚI VỌNG QUAN SÁT MẮT THƯỜNG (SGK TRANG 32)",
+                    heading: "“Mắt thần” trên đỉnh núi, nhà cao tầng vô hiệu hóa gây nhiễu",
+                    points: [
+                        {
+                            lead: "Vị trí đặt vọng quan sát:",
+                            text: "Các vọng quan sát phòng không nhân dân được bố trí trên đỉnh núi, nóc nhà cao tầng và các điểm cao có tầm nhìn bao quát."
+                        },
+                        {
+                            lead: "Phát hiện địch từ sớm, từ xa:",
+                            text: "Trực chiến liên tục 24/24 giờ bằng mắt thường và ống nhòm để phát hiện địch tiến công đường không từ sớm, từ xa."
+                        },
+                        {
+                            lead: "Vô hiệu hóa tác chiến điện tử:",
+                            text: "Khi địch gây nhiễu nặng làm mù radar hoặc bay cực thấp bám địa hình, vọng quan sát mắt thường vẫn báo chính xác hướng đánh phá, số lượng, phương tiện của địch."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "MẠNG LƯỚI THÔNG BÁO, BÁO ĐỘNG RỘNG KHẮP (SGK TRANG 33)",
+                    heading: "Loa, còi điện, kẻng, mõ phủ kín từng đường làng, ngõ xóm",
+                    points: [
+                        {
+                            lead: "Hệ thống phát tín hiệu đa tầng:",
+                            text: "Chủ động thông báo, báo động kịp thời, rộng khắp bằng hệ thống đài phát thanh, truyền thanh, còi điện, kẻng, loa."
+                        },
+                        {
+                            lead: "Phủ kín mọi địa bàn dân cư:",
+                            text: "Được bố trí trên khắp các đường phố, khu công cộng; đường làng, ngõ xóm; các nhà máy, công trình."
+                        },
+                        {
+                            lead: "Hành động sinh tồn tức thì:",
+                            text: "Khi nghe thông báo, báo động địch tiến công đường không, mọi người nhanh chóng ẩn nấp để bảo đảm an toàn, hạn chế tổn thất khi địch đánh phá."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 15 --------------------
+            {
+                section: "III.2. PKND THỜI CHIẾN",
+                partSub: "MỤC 2b (PHẦN 1) • SƠ TÁN THỜI GIAN DÀI & SƠ TÁN KHẨN CẤP",
+                title: "2b) Tổ Chức Sơ Tán, Phân Tán: Thời Gian Dài & Khẩn Cấp",
+                leadLabel: "LỜI DẪN MỤC 2b (PHẦN 1)",
+                leadText: "Kẻ thù tiến công đường không luôn nhằm vào nơi tập trung đông người để gây thương vong lớn. Để hóa giải âm mưu đó, chúng ta thực hiện chiến thuật làm rỗng mục tiêu bằng tổ chức sơ tán, phân tán với 2 cấp độ đầu tiên: Sơ tán thời gian dài và Sơ tán trong tình huống khẩn cấp.",
+                layout: "standard",
+                figures: [
+                    {
+                        file: "5.5",
+                        label: "HÌNH 5.5 SGK (TRANG 33)",
+                        caption: "Học sinh nhanh chóng vào hầm tránh bom khi có báo động phòng không."
+                    },
+                    {
+                        file: "5.6",
+                        label: "HÌNH 5.6 SGK (TRANG 33)",
+                        caption: "Phụ nữ, trẻ em và người già tạm thời rời Thủ đô đi sơ tán trong những ngày máy bay Mỹ đánh phá ác liệt, cuối tháng 12/1972."
+                    }
+                ],
+                card1: {
+                    badge: "CẤP ĐỘ 1: SƠ TÁN, PHÂN TÁN THỜI GIAN DÀI",
+                    heading: "Sơ tán dài hạn đến khi tình hình ổn định (SGK Trang 33)",
+                    points: [
+                        {
+                            lead: "Đối tượng ưu tiên bảo vệ:",
+                            text: "Thực hiện đối với trẻ em, người già yếu, phụ nữ mang thai ở vùng trọng điểm phòng không và những người không nhất thiết phải ở lại (Hình 5.6 SGK)."
+                        },
+                        {
+                            lead: "Di dời cơ quan, nhà máy nhưng vẫn duy trì sản xuất:",
+                            text: "Các cơ quan, nhà máy, doanh nghiệp dời đi ra vùng an toàn nhưng vẫn bảo đảm hoạt động bình thường."
+                        },
+                        {
+                            lead: "Kỷ luật hầm hào trú ẩn:",
+                            text: "Học sinh, người dân ở các khu vực được hướng dẫn nhanh chóng vào hầm tránh bom ngay khi có báo động phòng không (Hình 5.5 SGK)."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "CẤP ĐỘ 2: SƠ TÁN TRONG TÌNH HUỐNG KHẨN CẤP",
+                    heading: "Sơ tán khẩn cấp tại khu vực địch sắp đánh phá ác liệt",
+                    points: [
+                        {
+                            lead: "Phạm vi áp dụng:",
+                            text: "Thực hiện ngay đối với các khu vực có nguy cơ địch tập trung đánh phá ác liệt theo cảnh báo trinh sát."
+                        },
+                        {
+                            lead: "Biện pháp thực hiện thần tốc:",
+                            text: "Nhanh chóng di chuyển người và phương tiện của các nhà máy, doanh nghiệp ra khỏi vùng trọng điểm bom đạn trong thời gian ngắn nhất."
+                        },
+                        {
+                            lead: "Tiếp tục sản xuất phục vụ chiến đấu:",
+                            text: "Sau khi sơ tán khẩn cấp, các đơn vị phải tiếp tục tổ chức sản xuất để bảo đảm cho nhu cầu quốc phòng và nhu cầu thiết yếu của đời sống nhân dân."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 16 --------------------
+            {
+                section: "III.2. PKND THỜI CHIẾN",
+                partSub: "MỤC 2b (PHẦN 2) • PHÂN TÁN TẠI CHỖ & NGHỆ THUẬT BẢO TOÀN LỰC LƯỢNG",
+                title: "2b) Phân Tán Tại Chỗ & Nghệ Thuật Bảo Toàn Lực Lượng",
+                leadLabel: "LỜI DẪN MỤC 2b (PHẦN 2)",
+                leadText: "Bên cạnh sơ tán dài hạn và sơ tán khẩn cấp, hình thức thứ ba quyết định trực tiếp đến khả năng giữ vững trận địa và mạch máu sản xuất tại các địa bàn trọng điểm chính là: Sơ tán, phân tán tại chỗ đối với lực lượng nòng cốt bám trụ.",
+                layout: "standard",
+                card1: {
+                    badge: "CẤP ĐỘ 3: SƠ TÁN, PHÂN TÁN TẠI CHỖ (SGK TRANG 33)",
+                    heading: "Lực lượng bám trụ vừa sản xuất vừa sẵn sàng chiến đấu",
+                    points: [
+                        {
+                            lead: "Đối tượng áp dụng:",
+                            text: "Áp dụng đối với lực lượng bám trụ ở những địa bàn trọng điểm về phòng không nhân dân (công nhân nòng cốt điện, nước, giao thông, dân quân tự vệ, y tế trực chiến)."
+                        },
+                        {
+                            lead: "Nguyên tắc phân tán tại chỗ:",
+                            text: "Không tập trung đông người tại một vị trí cố định mà chia nhỏ theo các công sự, hầm hào phân tán ngay tại nhà máy, bến cảng, trận địa."
+                        },
+                        {
+                            lead: "Nhiệm vụ kép:",
+                            text: "Sẵn sàng thực hiện các nhiệm vụ đánh trả và khắc phục hậu quả ngay tại chỗ khi địch tiến công hỏa lực đường không gây nên."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "NGHỆ THUẬT BẢO TOÀN LỰC LƯỢNG TRƯỚC BOM ĐẠN",
+                    heading: "Giảm tối đa thương vong – Giữ vững hậu phương chiến lược",
+                    points: [
+                        {
+                            lead: "Triệt tiêu hiệu quả bom đạn địch:",
+                            text: "Khi mục tiêu được sơ tán và phân tán triệt để, hàng nghìn tấn bom của kẻ thù trút xuống chỉ rơi vào khoảng không trống rỗng."
+                        },
+                        {
+                            lead: "Bài học lịch sử tháng 12/1972:",
+                            text: "Nhờ tổ chức sơ tán hơn 50 vạn dân ra khỏi nội thành Hà Nội và Hải Phòng kịp thời, ta đã giảm thiểu thương vong xuống mức thấp nhất trong 12 ngày đêm B-52 ném bom."
+                        },
+                        {
+                            lead: "Điểm tựa tinh thần cho tiền tuyến:",
+                            text: "Lực lượng bám trụ vững tâm chiến đấu vì biết gia đình, người già và trẻ nhỏ đã được sơ tán an toàn."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 17 --------------------
+            {
+                section: "III.2. PKND THỜI CHIẾN",
+                partSub: "MỤC 2c (PHẦN 1) • TOÀN DÂN ĐÁNH ĐỊCH & THẾ TRẬN HIỆP ĐỒNG 3 THỨ QUÂN",
+                title: "2c) Toàn Dân Đánh Địch Trên Không & Thế Trận Hiệp Đồng 3 Thứ Quân",
+                leadLabel: "LỜI DẪN MỤC 2c (PHẦN 1)",
+                leadText: "Phòng không nhân dân Việt Nam không chỉ có ẩn nấp và sơ tán. Đỉnh cao của nghệ thuật chiến tranh nhân dân nằm ở Mục 2c: Huy động toàn dân tham gia đánh địch trên không bằng lưới lửa tầm thấp dày đặc, tạo thế hiệp đồng 3 thứ quân để bộ đội chủ lực lập công lớn trên tầng cao.",
+                layout: "standard",
+                figures: [
+                    {
+                        file: "5.7",
+                        label: "HÌNH 5.7 SGK (TRANG 33)",
+                        caption: "Lực lượng pháo phòng không nổ súng quyết liệt đánh trả máy bay giặc Mỹ, bảo vệ Hà Nội (12/1972)."
+                    }
+                ],
+                card1: {
+                    badge: "LƯỚI LỬA PHÒNG KHÔNG DÀY ĐẶC & VÂY BẮT GIẶC LÁI",
+                    heading: "Toàn dân đánh địch tầm thấp & Gõ mõ, gõ kẻng bắt giặc lái",
+                    points: [
+                        {
+                            lead: "Lực lượng phòng không các cấp:",
+                            text: "Huy động các đơn vị súng máy phòng không của phòng không bộ đội địa phương, dân quân tự vệ, bộ đội biên phòng kết hợp các tổ bắn máy bay bay thấp bằng súng bộ binh ở làng, xã, nhà máy."
+                        },
+                        {
+                            lead: "Tạo lưới lửa phòng không dày đặc:",
+                            text: "Kết hợp chặt chẽ tạo nên mạng lưới hỏa lực nhiều tầng bảo vệ bầu trời (như lực lượng pháo phòng không bảo vệ Hà Nội tháng 12/1972 ở Hình 5.7 SGK)."
+                        },
+                        {
+                            lead: "Vây bắt giặc lái nhảy dù:",
+                            text: "Khi máy bay bị bắn rơi hoặc giặc lái nhảy dù, lập tức gõ mõ, gõ kẻng phát tín hiệu để toàn dân khoanh vùng vây bắt sống giặc lái ngay khi tiếp đất."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "THẾ TRẬN HIỆP ĐỒNG 3 THỨ QUÂN TỪ THẤP LÊN CAO",
+                    heading: "Từ lưới lửa Dân quân Nguyễn Đình Cận đến cánh bay Phạm Tuân",
+                    points: [
+                        {
+                            lead: "Tầng thấp – Lưới lửa PKND cơ sở (Dân quân Nguyễn Đình Cận):",
+                            text: "Lực lượng dân quân tự vệ dùng súng máy 12,7mm, đại liên và súng bộ binh khóa chặt độ cao thấp, trực tiếp bắn rơi máy bay bay bám địa hình như F-111A."
+                        },
+                        {
+                            lead: "Hiệu ứng ép địch nâng độ cao:",
+                            text: "Khiếp sợ lưới lửa tầm thấp dày đặc của dân quân tự vệ, phi công Mỹ buộc phải kéo cao đội hình bay lên trên, lọt thẳng vào tầm quét radar của ta."
+                        },
+                        {
+                            lead: "Tầng cao – Bộ đội chủ lực (Anh hùng Phạm Tuân):",
+                            text: "Pháo cao xạ, Tên lửa SAM-2 và Tiêm kích MiG-21 của các phi công huyền thoại như Phạm Tuân lập tức đón lõng và tiêu diệt các pháo đài bay B-52 trên tầng cao."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 18 --------------------
+            {
+                section: "ĐIỂM NHẤN LỊCH SỬ",
+                partSub: "MỤC 2c (PHẦN 2) • HAI BIỂU TƯỢNG ANH HÙNG CỦA THẾ TRẬN 3 THỨ QUÂN",
+                title: "Hiệp Đồng 3 Thứ Quân: Dân Quân Nguyễn Đình Cận & Anh Hùng Phạm Tuân",
+                leadLabel: "LỜI DẪN CÂU CHUYỆN LỊCH SỬ TIÊU BIỂU (NGUYỄN ĐÌNH CẬN & PHẠM TUÂN)",
+                leadText: "Nếu chỉ có vũ khí thô sơ của dân quân thì làm sao đối đầu với siêu cường không quân? Chính sự kết hợp giữa tầm thấp của Phòng không nhân dân và tầm cao của Bộ đội chủ lực đã tạo nên hai chiến công chấn động năm 1972: Trung đội trưởng dân quân Nguyễn Đình Cận bắn rơi F-111A và phi công Phạm Tuân bắn rơi pháo đài bay B-52.",
+                layout: "standard",
+                card1: {
+                    badge: "TẦNG THẤP PKND • DÂN QUÂN NGUYỄN ĐÌNH CẬN (17/10/1972)",
+                    heading: "Dùng súng máy 12,7mm bẻ gãy “cánh cụp, cánh xòe” F-111A",
+                    points: [
+                        {
+                            lead: "Thủ đoạn bay cực thấp của F-111A:",
+                            text: "Đêm 17/10/1972 tại xã Tiền Châu (Vĩnh Phúc), Mỹ tung máy bay ném bom siêu thanh F-111A tối tân nhất bay cực thấp bám địa hình trong đêm tối để luồn dưới sóng radar."
+                        },
+                        {
+                            lead: "Bản lĩnh chỉ huy của đồng chí Nguyễn Đình Cận:",
+                            text: "Chỉ với 1 khẩu súng máy 12,7mm, 3 khẩu đại liên và vài khẩu súng trường, đồng chí Cận bình tĩnh chỉ huy Trung đội dân quân đồng loạt nổ súng đón đầu khi máy bay lao qua."
+                        },
+                        {
+                            lead: "Chiến công phi thường (Em có biết – SGK Trang 34):",
+                            text: "Chiếc F-111A bốc cháy ngùn ngụt và đâm thẳng xuống cánh đồng Đầm Quần cách trận địa chỉ 1 km, chứng minh lưới lửa PKND hoàn toàn đủ sức hạ gục máy bay hiện đại nhất."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "TẦNG CAO CHỦ LỰC • ANH HÙNG PHẠM TUÂN (27/12/1972)",
+                    heading: "Lái tiêm kích MiG-21 bắn rơi tại chỗ pháo đài bay B-52",
+                    points: [
+                        {
+                            lead: "Đột phá hàng rào hộ tống dày đặc trên tầng cao:",
+                            text: "Đêm 27/12/1972, được sự dẫn đường của radar và thế trận phòng không toàn dân từ mặt đất, phi công Phạm Tuân lái tiêm kích MiG-21 số hiệu 5121 vượt qua vòng vây tiêm kích F-4 của Mỹ."
+                        },
+                        {
+                            lead: "Người đầu tiên bắn rơi B-52 bằng tiêm kích:",
+                            text: "Tiếp cận cự ly gần trên bầu trời Sơn La, ông phóng liền hai quả tên lửa, bắn rơi tại chỗ pháo đài bay chiến lược B-52 — vốn được Mỹ mệnh danh là bất khả xâm phạm."
+                        },
+                        {
+                            lead: "Giá trị bài học hiệp đồng:",
+                            text: "Chiến công của Nguyễn Đình Cận ở tầm thấp và Phạm Tuân ở tầm cao là hai mảnh ghép hoàn hảo làm nên chiến thắng Điện Biên Phủ trên không lừng lẫy."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 19 --------------------
+            {
+                section: "ĐIỆN BIÊN PHỦ TRÊN KHÔNG",
+                partSub: "ĐỈNH CAO CHIẾN TRANH NHÂN DÂN TRÊN MẶT TRẬN ĐỐI KHÔNG (12/1972)",
+                title: "12 Ngày Đêm Tháng 12/1972: Bản Hùng Ca Bảo Vệ Bầu Trời Thủ Đô",
+                leadLabel: "LỜI DẪN TỔNG HỢP Ý NGHĨA CHIẾN DỊCH 12 NGÀY ĐÊM NĂM 1972",
+                leadText: "Từ những trận địa súng máy trên nóc nhà máy, làng xã cho đến bệ phóng tên lửa SAM-2 và biên đội tiêm kích MiG-21, suốt 12 ngày đêm cuối tháng 12/1972, quân và dân miền Bắc đã đánh bại cuộc tập kích đường không chiến lược lớn nhất của đế quốc Mỹ, buộc đối phương phải ký Hiệp định Paris.",
+                layout: "standard",
+                card1: {
+                    badge: "SỰ TÀN KHỐC CỦA CUỘC TẬP KÍCH CHIẾN LƯỢC LINEBACKER II",
+                    heading: "Hàng vạn tấn bom B-52 trút xuống Hà Nội và Hải Phòng",
+                    points: [
+                        {
+                            lead: "Quy mô huy động chưa từng có:",
+                            text: "Mỹ huy động gần 200 máy bay ném bom chiến lược B-52 cùng hơn 1.000 máy bay chiến thuật, trút hàng vạn tấn bom xuống Hà Nội, Hải Phòng và các tỉnh miền Bắc suốt 12 ngày đêm."
+                        },
+                        {
+                            lead: "Âm mưu hủy diệt ý chí chiến đấu:",
+                            text: "Đánh phá ác liệt vào bệnh viện Bạch Mai, phố Khâm Thiên, ga Yên Viên nhằm gây tâm lý hoảng loạn tột độ và phá hủy tiềm lực quốc phòng của ta."
+                        },
+                        {
+                            lead: "Sức sống kiên cường của thế trận PKND:",
+                            text: "Nhờ sơ tán kịp thời, hầm hào vững chắc và lực lượng cứu sập, cứu thương bám trụ, Thủ đô Hà Nội vẫn hiên ngang đứng vững giữa mưa bom bão đạn."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "KỲ TÍCH LỊCH SỬ CỦA THẾ TRẬN PHÒNG KHÔNG VIỆT NAM",
+                    heading: "Bắn rơi 81 máy bay Mỹ, trong đó có 34 pháo đài bay B-52",
+                    points: [
+                        {
+                            lead: "Con số đi vào lịch sử thế giới:",
+                            text: "Từ ngày 18/12 đến 29/12/1972, quân và dân ta đã bắn rơi 81 máy bay hiện đại của Mỹ, trong đó có 34 siêu pháo đài bay B-52 và 5 máy bay F-111A."
+                        },
+                        {
+                            lead: "Đóng góp trực tiếp của lực lượng PKND:",
+                            text: "Các phân đội dân quân tự vệ, bộ đội địa phương trực tiếp bắn rơi nhiều máy bay bay thấp, bảo vệ trận địa tên lửa và vây bắt hàng chục phi công Mỹ nhảy dù."
+                        },
+                        {
+                            lead: "Ý nghĩa thời đại:",
+                            text: "Chứng minh chân lý: Một dân tộc có thế trận phòng không nhân dân vững mạnh sẽ đánh bại mọi cuộc tiến công đường không của kẻ thù xâm lược."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 20 --------------------
+            {
+                section: "III.2. PKND THỜI CHIẾN",
+                partSub: "MỤC 2d (PHẦN 1) • KHẮC PHỤC HẬU QUẢ: CỨU SẬP & CỨU THƯƠNG",
+                title: "2d) Khắc Phục Hậu Quả: Tổ Chức Cứu Sập & Cứu Thương",
+                leadLabel: "LỜI DẪN MỤC 2d (PHẦN 1)",
+                leadText: "Sau mỗi đợt bom đạn địch trút xuống là cuộc chạy đua sinh tử ngay trên mặt đất để giành giật từng sinh mạng cho đồng bào. Nhiệm vụ Mục 2d – Tổ chức khắc phục hậu quả và những thiệt hại do địch tiến công đường không được triển khai qua 4 mũi nhọn, trước hết là Cứu sập và Cứu thương.",
+                layout: "standard",
+                card1: {
+                    badge: "MŨI NHỌN 1: TỔ CHỨC CỨU SẬP (SGK TRANG 34)",
+                    heading: "Dân quân tự vệ làm nòng cốt tại từng nhà máy, khu phố",
+                    points: [
+                        {
+                            lead: "Tổ chức chặt chẽ tại cơ sở:",
+                            text: "Công tác cứu sập được tổ chức ngay ở từng nhà máy, cơ quan, khu phố."
+                        },
+                        {
+                            lead: "Lực lượng nòng cốt:",
+                            text: "Lấy lực lượng dân quân tự vệ làm nòng cốt để nhanh chóng đào bới, chống đỡ cấu kiện đổ nát, giải cứu người bị mắc kẹt dưới hầm sập."
+                        },
+                        {
+                            lead: "Phân chia 2 lực lượng khoa học:",
+                            text: "Phân làm hai loại là lực lượng cứu sập tại chỗ (xử lý ngay trong những phút đầu tiên) và lực lượng cứu sập cơ động (chi viện kịp thời cho các điểm bị đánh phá nặng)."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "MŨI NHỌN 2: TỔ CHỨC CỨU THƯƠNG (SGK TRANG 34)",
+                    heading: "Hệ thống cứu thương liên hoàn 4 tuyến y tế",
+                    points: [
+                        {
+                            lead: "Lực lượng nòng cốt:",
+                            text: "Tổ chức cứu thương lấy lực lượng y tế làm nòng cốt kết hợp các tổ tải thương dân quân tự vệ."
+                        },
+                        {
+                            lead: "Tuyến 1 và Tuyến 2 (Tiền phương):",
+                            text: "Chia thành tuyến sơ cứu tại chỗ (cầm máu, băng bó ngay tại hiện trường) đến tuyến cấp cứu ban đầu tại trạm xá, bệnh xá."
+                        },
+                        {
+                            lead: "Tuyến 3 và Tuyến 4 (Hậu phương chuyên sâu):",
+                            text: "Chuyển tiếp lên tuyến bệnh viện huyện (quận) và tuyến bệnh viện tỉnh, thành phố và Trung ương."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 21 --------------------
+            {
+                section: "III.2. PKND THỜI CHIẾN",
+                partSub: "MỤC 2d (PHẦN 2) • TỔ CHỨC CHỮA CHÁY & ỔN ĐỊNH ĐỜI SỐNG",
+                title: "2d) Khắc Phục Hậu Quả: Chữa Cháy & Ổn Định Đời Sống Nhân Dân",
+                leadLabel: "LỜI DẪN MỤC 2d (PHẦN 2)",
+                leadText: "Song song với giải cứu người bị nạn qua cứu sập và cứu thương, hai mũi nhọn tiếp theo của Mục 2d là Tổ chức chữa cháy để bảo vệ kho tàng, nhà máy và Nhanh chóng ổn định đời sống để hậu phương vững vàng sau bom đạn.",
+                layout: "standard",
+                card1: {
+                    badge: "MŨI NHỌN 3: TỔ CHỨC CHỮA CHÁY (SGK TRANG 34)",
+                    heading: "Hiệp đồng PCCC chuyên nghiệp & Quần chúng cơ sở",
+                    points: [
+                        {
+                            lead: "Lực lượng nòng cốt:",
+                            text: "Tổ chức chữa cháy lấy lực lượng phòng cháy chữa cháy làm nòng cốt chỉ huy kỹ thuật và phương tiện chữa cháy chuyên dụng."
+                        },
+                        {
+                            lead: "Sức mạnh quần chúng tại chỗ:",
+                            text: "Kết hợp chặt chẽ với lực lượng dân quân tự vệ và quần chúng ở cơ sở để dập tắt đám cháy ngay từ khi mới bùng phát."
+                        },
+                        {
+                            lead: "Nhiệm vụ trọng tâm:",
+                            text: "Khoanh vùng đám cháy, cứu tài sản tại các kho tàng, nhà máy, khu công nghiệp và ngăn chặn cháy lan sang khu dân cư."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "MŨI NHỌN 4: ỔN ĐỊNH ĐỜI SỐNG (SGK TRANG 34)",
+                    heading: "Tương thân tương ái, dựng nhà tạm & Khôi phục sản xuất",
+                    points: [
+                        {
+                            lead: "Vai trò điều hành:",
+                            text: "Ban chỉ đạo phòng không nhân dân các cấp chủ động công tác khắc phục hậu quả ngay sau mỗi đợt địch đánh phá."
+                        },
+                        {
+                            lead: "Phát huy tinh thần tương trợ:",
+                            text: "Phát huy tinh thần tương thân tương ái, giúp đỡ lẫn nhau (lá lành đùm lá rách) trong cộng đồng."
+                        },
+                        {
+                            lead: "Hỗ trợ thiết thực:",
+                            text: "Tổ chức hỗ trợ, giúp đỡ nhân dân khu vực bị đánh phá sửa chữa nhà cửa, bố trí nơi ở tạm thời nhằm nhanh chóng khắc phục hậu quả, ổn định đời sống nhân dân."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 22 --------------------
+            {
+                section: "MỞ RỘNG HIỆN ĐẠI",
+                partSub: "CHIẾN TRANH CÔNG NGHỆ CAO • UAV CẢM TỬ & THẾ TRẬN ĐỒNG NAI",
+                title: "Đối Phó UAV Cảm Tử & Hiệp Đồng Bảo Vệ Vùng Trời Biên Hòa",
+                leadLabel: "LỜI DẪN MỞ RỘNG THỰC TIỄN CHIẾN TRANH CÔNG NGHỆ CAO HIỆN NAY",
+                leadText: "Thưa thầy và các bạn, trong các cuộc xung đột hiện đại ngày nay với sự xuất hiện dày đặc của UAV cảm tử và tên lửa hành trình bay bám địa hình, vai trò của Phòng không nhân dân lại càng trở nên thiết yếu — đặc biệt tại địa bàn chiến lược Đồng Nai với Sân bay Biên Hòa và Trung đoàn Không quân 935.",
+                layout: "standard",
+                card1: {
+                    badge: "THÁCH THỨC TỪ UAV CẢM TỬ & TÊN LỬA HÀNH TRÌNH",
+                    heading: "Vì sao lưới lửa PKND cơ sở là khắc tinh của Drone/UAV?",
+                    points: [
+                        {
+                            lead: "Điểm yếu của khí tài lớn trước Drone giá rẻ:",
+                            text: "UAV tự sát kích thước nhỏ, bay cực thấp thường khó bị radar tầm xa phát hiện sớm và cực kỳ tốn kém nếu dùng tên lửa phòng không đắt tiền để đánh chặn."
+                        },
+                        {
+                            lead: "Lợi thế tuyệt đối của PKND:",
+                            text: "Mạng lưới vọng quan sát mắt thường trên nhà cao tầng kết hợp các tổ súng máy 12,7mm, pháo cao xạ và súng chế áp UAV của dân quân tự vệ chính là lưới lửa khắc chế hiệu quả nhất ở tầm thấp."
+                        },
+                        {
+                            lead: "Chia lửa cho bộ đội chủ lực:",
+                            text: "Giúp bộ đội tên lửa và không quân tập trung toàn lực tiêu diệt các mục tiêu chiến lược lớn."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "HIỆP ĐỒNG BẢO VỆ VÙNG TRỜI PHÍA NAM",
+                    heading: "Trung đoàn Không quân 935 (Biên Hòa) & PKND Đồng Nai",
+                    points: [
+                        {
+                            lead: "Lá chắn thép trên không:",
+                            text: "Các phi công tiêm kích Su-30MK2 của Trung đoàn Không quân 935 (Sư đoàn 370) tại Sân bay Biên Hòa luôn sẵn sàng cất cánh đánh chặn mục tiêu xâm phạm vùng trời, vùng biển phía Nam."
+                        },
+                        {
+                            lead: "Thế trận phòng không nhân dân vững chắc dưới mặt đất:",
+                            text: "Lực lượng PKND tỉnh Đồng Nai phối hợp chặt chẽ với Sân bay Biên Hòa bảo vệ hành lang an toàn bay, diễn tập khu vực phòng thủ và sẵn sàng bảo vệ các khu công nghiệp, nhà máy thủy điện Trị An."
+                        },
+                        {
+                            lead: "Sức mạnh tổng hợp thời đại mới:",
+                            text: "Sự kết hợp giữa công nghệ hiện đại của bộ đội chủ lực và tai mắt rộng khắp của nhân dân."
+                        }
+                    ]
+                }
+            },
+
+            // -------------------- SLIDE 23 --------------------
+            {
+                section: "TỔNG KẾT BÀI HỌC",
+                partSub: "KẾT THÚC CHUYÊN ĐỀ • BÀI 5 (PHẦN III): HOẠT ĐỘNG PHÒNG KHÔNG NHÂN DÂN",
+                title: "Chân Lý “Thế Trận Lòng Dân” Trên Bầu Trời Tổ Quốc",
+                leadLabel: "LỜI DẪN TỔNG KẾT & LỜI CẢM ƠN KẾT THÚC BÀI THUYẾT TRÌNH",
+                leadText: "Thưa thầy và các bạn, nhìn lại toàn bộ Bài 5 – Phần III: Hoạt động phòng không nhân dân, chúng ta đúc kết được một chân lý bất biến: Vũ khí tối tân đến đâu cũng có điểm yếu, nhưng một thế trận lòng dân được chuẩn bị từ thời bình thì không một loại bom đạn nào có thể khuất phục được. Bài thuyết trình của mình xin kết thúc tại đây. Cảm ơn thầy và các bạn đã lắng nghe!",
+                layout: "standard",
+                card1: {
+                    badge: "ĐÚC KẾT 2 TRẠNG THÁI HOẠT ĐỘNG PKND",
+                    heading: "Chủ động trong Thời bình – Kiên cường trong Thời chiến",
+                    points: [
+                        {
+                            lead: "1. Hoạt động PKND thời bình (Mục 1):",
+                            text: "Thực hiện trọn vẹn lời di chúc của Vua Lê Thái Tổ “Lo giữ nước từ khi nước chưa nguy” qua Ban chỉ đạo 4 cấp, quy hoạch lưỡng dụng, tuyên truyền giáo dục, huấn luyện đêm và xây dựng công trình phòng tránh."
+                        },
+                        {
+                            lead: "2. Hoạt động PKND thời chiến (Mục 2):",
+                            text: "Vận hành nhuần nhuyễn trinh sát báo động, sơ tán 3 cấp độ, lưới lửa toàn dân 3 thứ quân (như Nguyễn Đình Cận và Phạm Tuân năm 1972) và khắc phục hậu quả nhân văn."
+                        },
+                        {
+                            lead: "3. Bài học xuyên suốt:",
+                            text: "Phòng không nhân dân là nền tảng vững chắc để Bộ đội Phòng không – Không quân chủ lực phát huy tối đa sức mạnh."
+                        }
+                    ]
+                },
+                card2: {
+                    badge: "THÔNG ĐIỆP ĐỌNG LẠI VỚI TUỔI TRẺ ĐỒNG NAI",
+                    heading: "Niềm tự hào dưới bầu trời cánh bay Trung đoàn 935",
+                    points: [
+                        {
+                            lead: "Trân trọng giá trị hòa bình hôm nay:",
+                            text: "Mỗi khi ngước nhìn những cánh bay Su-30MK2 của Trung đoàn Không quân 935 sải cánh trên bầu trời Biên Hòa bình yên, chúng ta càng thấm thía sự hy sinh và trí tuệ của thế hệ cha ông."
+                        },
+                        {
+                            lead: "Sẵn sàng góp sức bảo vệ bầu trời Tổ quốc:",
+                            text: "Nắm vững kiến thức Phòng không nhân dân ngay từ ghế nhà trường lớp 11 chính là hành trang thiết thực nhất để mỗi học sinh bảo vệ bản thân, gia đình và quê hương."
+                        },
+                        {
+                            lead: "Lời kết:",
+                            text: "Xin kính chúc thầy và cả lớp thật nhiều sức khỏe, học tập tốt. Mình rất mong nhận được ý kiến đóng góp từ thầy và các bạn!"
+                        }
+                    ]
+                }
+            }
+        ];
+
+        /* =========================================================================
+           2. MULTI-EXTENSION IMAGE LOADER FOR SUBFOLDER `anh/`
+           ========================================================================= */
+        const IMG_EXTENSIONS = [".jpg", ".png", ".jpeg", ".webp", ".JPG", ".PNG"];
+        const resolvedImageCache = {};
+
+        function createAutoResolveImage(fileBase, altText, onSuccessCallback, onFailCallback) {
+            const img = document.createElement("img");
+            img.alt = altText;
+
+            if (resolvedImageCache[fileBase]) {
+                img.src = resolvedImageCache[fileBase];
+                if (typeof onSuccessCallback === "function") {
+                    onSuccessCallback(img, resolvedImageCache[fileBase]);
+                }
+                return img;
+            }
+
+            let attempt = 0;
+            img.src = "anh/" + fileBase + IMG_EXTENSIONS[attempt];
+
+            img.onload = function () {
+                const validSrc = "anh/" + fileBase + IMG_EXTENSIONS[attempt];
+                resolvedImageCache[fileBase] = validSrc;
+                if (typeof onSuccessCallback === "function") {
+                    onSuccessCallback(img, validSrc);
+                }
+            };
+
+            img.onerror = function () {
+                attempt++;
+                if (attempt < IMG_EXTENSIONS.length) {
+                    img.src = "anh/" + fileBase + IMG_EXTENSIONS[attempt];
+                } else {
+                    img.onerror = null;
+                    if (typeof onFailCallback === "function") {
+                        onFailCallback(img);
+                    }
+                }
+            };
+
+            return img;
+        }
+
+        /* =========================================================================
+           3. STATE MANAGEMENT & PURE DOM RENDERING ENGINE (WITH TRY/CATCH)
+           ========================================================================= */
+        let currentSlide = 0;
+        const totalSlides = SLIDES.length;
+        let lastNavTimestamp = 0;
+
+        const slideStage = document.getElementById("slideStage");
+        const slideViewport = document.getElementById("slide-viewport");
+        const topProgressBar = document.getElementById("topProgressBar");
+        const headerSectionBadge = document.getElementById("headerSectionBadge");
+        const footerCounter = document.getElementById("footerCounter");
+        const btnPrev = document.getElementById("btnPrev");
+        const btnNext = document.getElementById("btnNext");
+        const indexModal = document.getElementById("indexModal");
+        const indexGrid = document.getElementById("indexGrid");
+        const figureZoomModal = document.getElementById("figureZoomModal");
+
+        function buildSplitCardElement(cardData, cardIndex, customTag) {
+            const isLeft = (cardIndex === 1);
+            const card = document.createElement("div");
+            card.className = (isLeft ? "card-tactical-left" : "card-tactical-right") +
+                " card-corner-gold rounded-2xl p-4 sm:p-5 flex flex-col justify-between h-full";
+
+            const inner = document.createElement("div");
+
+            // Top row: badge + tag label
+            const topRow = document.createElement("div");
+            topRow.className = "flex items-center justify-between gap-2 mb-2.5";
+
+            const badge = document.createElement("span");
+            badge.className = isLeft
+                ? "px-2.5 py-0.5 rounded-md border text-[11px] font-extrabold uppercase tracking-wider bg-sky-400/15 border-sky-400/45 text-sky-400"
+                : "px-2.5 py-0.5 rounded-md border text-[11px] font-extrabold uppercase tracking-wider bg-amber-400/15 border-amber-400/45 text-amber-300";
+            badge.textContent = cardData.badge;
+
+            const tag = document.createElement("span");
+            tag.className = isLeft
+                ? "text-[11px] font-extrabold uppercase tracking-widest opacity-60 shrink-0 text-sky-400"
+                : "text-[11px] font-extrabold uppercase tracking-widest opacity-60 shrink-0 text-amber-300";
+            tag.textContent = customTag || (isLeft ? "PHÂN TÍCH 01" : "PHÂN TÍCH 02");
+
+            topRow.appendChild(badge);
+            topRow.appendChild(tag);
+
+            // Card Heading
+            const h2 = document.createElement("h2");
+            h2.className = isLeft
+                ? "card-heading-fluid font-extrabold mb-3 text-sky-400"
+                : "card-heading-fluid font-extrabold mb-3 text-amber-300";
+            h2.textContent = cardData.heading;
+
+            // Bullet List
+            const ul = document.createElement("ul");
+            ul.className = "space-y-2.5";
+
+            cardData.points.forEach(pt => {
+                const li = document.createElement("li");
+                li.className = "flex items-start gap-2.5 body-fluid text-slate-100";
+
+                const dot = document.createElement("span");
+                dot.className = isLeft
+                    ? "w-2 h-2 rounded-full mt-2 shrink-0 bg-sky-400"
+                    : "w-2 h-2 rounded-full mt-2 shrink-0 bg-amber-400";
+
+                const textWrap = document.createElement("span");
+                if (typeof pt === "object" && pt !== null) {
+                    const strong = document.createElement("strong");
+                    strong.className = "text-white font-bold";
+                    strong.textContent = pt.lead + " ";
+                    textWrap.appendChild(strong);
+                    textWrap.appendChild(document.createTextNode(pt.text));
+                } else {
+                    textWrap.textContent = String(pt);
+                }
+
+                li.appendChild(dot);
+                li.appendChild(textWrap);
+                ul.appendChild(li);
+            });
+
+            inner.appendChild(topRow);
+            inner.appendChild(h2);
+            inner.appendChild(ul);
+            card.appendChild(inner);
+
+            return card;
+        }
+
+        function buildFiguresStripElement(figuresList) {
+            if (!Array.isArray(figuresList) || figuresList.length === 0) return null;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "card-tactical-right card-corner-gold rounded-2xl p-3.5 sm:p-4 mt-4";
+
+            const headerRow = document.createElement("div");
+            headerRow.className = "flex items-center justify-between gap-2 mb-2.5";
+
+            const headerTitle = document.createElement("span");
+            headerTitle.className = "text-xs font-extrabold uppercase tracking-widest flex items-center gap-1.5 text-amber-300";
+            headerTitle.textContent = "▣ TƯ LIỆU HÌNH ẢNH SÁCH GIÁO KHOA";
+
+            const headerHint = document.createElement("span");
+            headerHint.className = "text-[11px] font-semibold text-slate-400";
+            headerHint.textContent = "Bấm vào khung hình để phóng to chiếu cả lớp";
+
+            headerRow.appendChild(headerTitle);
+            headerRow.appendChild(headerHint);
+            wrapper.appendChild(headerRow);
+
+            const grid = document.createElement("div");
+            grid.className = figuresList.length > 1
+                ? "grid grid-cols-1 lg:grid-cols-2 gap-3.5"
+                : "grid grid-cols-1 gap-3.5";
+
+            figuresList.forEach(fig => {
+                const figCard = document.createElement("div");
+                figCard.className = "flex flex-col sm:flex-row items-center gap-4 p-3 rounded-xl bg-[#050912]/90 border border-amber-400/35 hover:border-amber-400/75 transition cursor-pointer group";
+                figCard.title = "Bấm để phóng to hình minh họa";
+                figCard.addEventListener("click", () => openFigureZoom(fig));
+
+                // .fig-thumb container with object-fit: contain on #050912
+                const thumbBox = document.createElement("div");
+                thumbBox.className = "fig-thumb rounded-lg p-1.5 w-full sm:w-[240px] h-[146px] shrink-0";
+
+                const fallbackBox = document.createElement("div");
+                fallbackBox.className = "flex flex-col items-center justify-center text-center px-3 py-2 w-full h-full";
+                const fbCode = document.createElement("span");
+                fbCode.className = "px-2 py-0.5 rounded bg-amber-400/15 text-amber-300 border border-amber-400/40 text-[10px] font-extrabold uppercase tracking-wider mb-1.5";
+                fbCode.textContent = fig.label;
+                const fbPath = document.createElement("span");
+                fbPath.className = "text-[11px] font-mono text-sky-400";
+                fbPath.textContent = "anh/" + fig.file + ".jpg";
+                fallbackBox.appendChild(fbCode);
+                fallbackBox.appendChild(fbPath);
+                thumbBox.appendChild(fallbackBox);
+
+                const imgEl = createAutoResolveImage(
+                    fig.file,
+                    fig.label,
+                    (loadedImg) => {
+                        fallbackBox.style.display = "none";
+                        loadedImg.style.display = "block";
+                    },
+                    (failedImg) => {
+                        failedImg.style.display = "none";
+                        fallbackBox.style.display = "flex";
+                    }
+                );
+                imgEl.style.display = "none";
+                thumbBox.appendChild(imgEl);
+
+                // Hover Zoom Badge Overlay
+                const hoverOverlay = document.createElement("div");
+                hoverOverlay.className = "absolute inset-0 bg-slate-950/65 opacity-0 group-hover:opacity-100 transition flex items-center justify-center pointer-events-none";
+                const zoomPill = document.createElement("span");
+                zoomPill.className = "px-3 py-1 rounded bg-amber-400 text-slate-950 font-extrabold text-[11px] shadow";
+                zoomPill.textContent = "Phóng to ↗";
+                hoverOverlay.appendChild(zoomPill);
+                thumbBox.appendChild(hoverOverlay);
+
+                // Right Caption Area
+                const infoBox = document.createElement("div");
+                infoBox.className = "flex flex-col justify-between flex-1 w-full";
+
+                const infoTop = document.createElement("div");
+                const metaRow = document.createElement("div");
+                metaRow.className = "flex items-center justify-between gap-2 mb-1.5";
+
+                const codeBadge = document.createElement("span");
+                codeBadge.className = "px-2.5 py-0.5 rounded bg-amber-400/15 text-amber-300 border border-amber-400/50 text-[11px] font-extrabold uppercase tracking-wider";
+                codeBadge.textContent = fig.label;
+
+                const zoomAction = document.createElement("span");
+                zoomAction.className = "text-[11px] font-extrabold text-sky-400 group-hover:underline shrink-0";
+                zoomAction.textContent = "Phóng to ↗";
+
+                metaRow.appendChild(codeBadge);
+                metaRow.appendChild(zoomAction);
+
+                const capP = document.createElement("p");
+                capP.className = "text-xs sm:text-sm italic font-semibold leading-relaxed text-slate-200";
+                capP.textContent = fig.caption;
+
+                infoTop.appendChild(metaRow);
+                infoTop.appendChild(capP);
+                infoBox.appendChild(infoTop);
+
+                figCard.appendChild(thumbBox);
+                figCard.appendChild(infoBox);
+                grid.appendChild(figCard);
+            });
+
+            wrapper.appendChild(grid);
+            return wrapper;
+        }
+
+        function buildVideoSectionElement(slide) {
+            const grid = document.createElement("div");
+            grid.className = "grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-4 items-stretch";
+
+            // Left Column: YouTube Tactical Frame
+            const leftCard = document.createElement("div");
+            leftCard.className = "card-tactical-left card-corner-gold rounded-2xl p-4 sm:p-5 flex flex-col justify-between";
+
+            const topBar = document.createElement("div");
+            topBar.className = "flex flex-wrap items-center justify-between gap-2 mb-2.5";
+
+            const badge = document.createElement("span");
+            badge.className = "px-3 py-1 rounded-md bg-sky-500/15 border border-sky-400/45 text-sky-300 text-[11px] font-extrabold uppercase tracking-wider";
+            badge.textContent = slide.videoBadge;
+
+            const extLink = document.createElement("a");
+            extLink.href = slide.watchUrl;
+            extLink.target = "_blank";
+            extLink.rel = "noopener noreferrer";
+            extLink.className = "px-2.5 py-1 rounded-lg ui-pill hover:border-amber-400 text-[11px] font-extrabold text-amber-300 transition inline-flex items-center gap-1 shrink-0 whitespace-nowrap";
+            extLink.textContent = "Mở trên YouTube ↗";
+
+            topBar.appendChild(badge);
+            topBar.appendChild(extLink);
+
+            const frameWrap = document.createElement("div");
+            frameWrap.className = "relative w-full aspect-video rounded-xl overflow-hidden border-2 border-amber-400/60 bg-black shadow-[0_10px_30px_rgba(0,0,0,0.75)] my-1";
+
+            const iframe = document.createElement("iframe");
+            iframe.id = slide.iframeId;
+            iframe.src = slide.embedUrl;
+            iframe.title = slide.iframeTitle;
+            iframe.className = "absolute inset-0 w-full h-full";
+            iframe.setAttribute("frameborder", "0");
+            iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+            iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+            iframe.allowFullscreen = true;
+
+            frameWrap.appendChild(iframe);
+
+            const captionRow = document.createElement("div");
+            captionRow.className = "mt-2.5 flex items-center justify-between gap-2 text-xs text-slate-300";
+            const capP = document.createElement("p");
+            capP.className = "italic font-medium";
+            capP.textContent = slide.videoCaption;
+            captionRow.appendChild(capP);
+
+            leftCard.appendChild(topBar);
+            leftCard.appendChild(frameWrap);
+            leftCard.appendChild(captionRow);
+
+            // Right Column: Analysis Card
+            const rightCard = buildSplitCardElement(slide.analysisCard, 2, "TRỌNG TÂM VIDEO");
+
+            grid.appendChild(leftCard);
+            grid.appendChild(rightCard);
+            return grid;
+        }
+
+        function openFigureZoom(fig) {
+            if (!fig) return;
+            const codeEl = document.getElementById("zoomFigCode");
+            const capEl = document.getElementById("zoomFigCaption");
+            const container = document.getElementById("zoomFigContainer");
+
+            codeEl.textContent = fig.label;
+            capEl.textContent = fig.caption;
+
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            const fallbackMsg = document.createElement("div");
+            fallbackMsg.className = "text-center px-6 py-8";
+            const fbTitle = document.createElement("div");
+            fbTitle.className = "text-amber-300 font-extrabold text-base mb-1";
+            fbTitle.textContent = fig.label;
+            const fbSub = document.createElement("div");
+            fbSub.className = "text-sky-400 font-mono text-xs";
+            fbSub.textContent = "Đường dẫn tệp: anh/" + fig.file + ".jpg";
+            fallbackMsg.appendChild(fbTitle);
+            fallbackMsg.appendChild(fbSub);
+            container.appendChild(fallbackMsg);
+
+            const zoomImg = createAutoResolveImage(
+                fig.file,
+                fig.label,
+                (loadedImg) => {
+                    fallbackMsg.style.display = "none";
+                    loadedImg.style.display = "block";
+                },
+                (failedImg) => {
+                    failedImg.style.display = "none";
+                    fallbackMsg.style.display = "block";
+                }
+            );
+            zoomImg.style.display = "none";
+            container.appendChild(zoomImg);
+
+            figureZoomModal.classList.remove("hidden");
+            figureZoomModal.classList.add("flex");
+        }
+
+        function closeFigureZoom() {
+            figureZoomModal.classList.add("hidden");
+            figureZoomModal.classList.remove("flex");
+        }
+
+        function stopAllActiveVideos() {
+            const iframes = slideStage.querySelectorAll("iframe");
+            iframes.forEach(iframe => {
+                iframe.src = "about:blank";
+            });
+        }
+
+        function renderSlide(index, animate = true) {
+            try {
+                const slide = SLIDES[index];
+                if (!slide) return;
+
+                const idxStr = String(index + 1).padStart(2, "0");
+                const totalStr = String(totalSlides).padStart(2, "0");
+
+                if (animate) slideStage.classList.add("fade-out");
+
+                setTimeout(() => {
+                    try {
+                        slideViewport.scrollTop = 0;
+
+                        topProgressBar.style.width = ((index + 1) / totalSlides * 100) + "%";
+                        headerSectionBadge.textContent = slide.section;
+                        footerCounter.textContent = idxStr + " / " + totalStr;
+
+                        // Clear stage safely
+                        while (slideStage.firstChild) {
+                            slideStage.removeChild(slideStage.firstChild);
+                        }
+
+                        // 1. Slide Header Title Block
+                        const headerWrap = document.createElement("div");
+                        headerWrap.className = "flex flex-col sm:flex-row sm:items-end justify-between gap-2 pb-2.5 mb-3.5 border-b border-amber-400/35";
+
+                        const titleCol = document.createElement("div");
+                        const subDiv = document.createElement("div");
+                        subDiv.className = "text-[11px] sm:text-xs font-extrabold uppercase tracking-widest mb-1 text-amber-300";
+                        subDiv.textContent = slide.partSub;
+
+                        const h1 = document.createElement("h1");
+                        h1.className = "slide-main-title font-extrabold tracking-tight";
+                        h1.textContent = slide.title;
+
+                        titleCol.appendChild(subDiv);
+                        titleCol.appendChild(h1);
+
+                        const pageBadge = document.createElement("div");
+                        pageBadge.className = "px-3 py-1 rounded-lg ui-pill text-xs font-extrabold tracking-widest shrink-0 self-start sm:self-end text-sky-400 whitespace-nowrap";
+                        pageBadge.textContent = "TRANG " + idxStr + " / " + totalStr;
+
+                        headerWrap.appendChild(titleCol);
+                        headerWrap.appendChild(pageBadge);
+                        slideStage.appendChild(headerWrap);
+
+                        // 2. Top Horizontal Lead Box (Lời dẫn & Đặt vấn đề)
+                        const leadBox = document.createElement("div");
+                        leadBox.className = "lead-box-surface card-corner-gold rounded-2xl p-4 sm:p-5 mb-4";
+
+                        const leadHeadRow = document.createElement("div");
+                        leadHeadRow.className = "flex items-center gap-2 mb-1.5";
+
+                        const leadStar = document.createElement("span");
+                        leadStar.className = "text-xs font-black text-amber-300";
+                        leadStar.textContent = "★";
+
+                        const leadTitle = document.createElement("span");
+                        leadTitle.className = "text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-amber-300";
+                        leadTitle.textContent = slide.leadLabel;
+
+                        leadHeadRow.appendChild(leadStar);
+                        leadHeadRow.appendChild(leadTitle);
+
+                        const leadP = document.createElement("p");
+                        leadP.className = "lead-fluid font-semibold text-white";
+                        leadP.textContent = slide.leadText;
+
+                        leadBox.appendChild(leadHeadRow);
+                        leadBox.appendChild(leadP);
+                        slideStage.appendChild(leadBox);
+
+                        // 3. Main Content Grid (2 Split Cards + Optional Figures OR Video Layout)
+                        if (slide.layout === "video") {
+                            slideStage.appendChild(buildVideoSectionElement(slide));
+                        } else {
+                            const cardsGrid = document.createElement("div");
+                            cardsGrid.className = "grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch";
+                            cardsGrid.appendChild(buildSplitCardElement(slide.card1, 1));
+                            cardsGrid.appendChild(buildSplitCardElement(slide.card2, 2));
+                            slideStage.appendChild(cardsGrid);
+
+                            const figStrip = buildFiguresStripElement(slide.figures);
+                            if (figStrip) {
+                                slideStage.appendChild(figStrip);
+                            }
+                        }
+
+                        btnPrev.disabled = (index === 0);
+                        btnNext.disabled = (index === totalSlides - 1);
+
+                        if (animate) slideStage.classList.remove("fade-out");
+                    } catch (innerErr) {
+                        console.error("Slide render inner error:", innerErr);
+                    }
+                }, animate ? 90 : 0);
+            } catch (err) {
+                console.error("Slide render error:", err);
+            }
+        }
+
+        function goToSlide(targetIndex, animate = true) {
+            const now = Date.now();
+            if (now - lastNavTimestamp < 220) return;
+            if (targetIndex < 0 || targetIndex >= totalSlides || targetIndex === currentSlide) return;
+
+            lastNavTimestamp = now;
+
+            if (document.activeElement && typeof document.activeElement.blur === "function") {
+                document.activeElement.blur();
+            }
+
+            stopAllActiveVideos();
+            currentSlide = targetIndex;
+            renderSlide(currentSlide, animate);
+        }
+
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentSlide - 1);
+        }
+
+        function jumpToSlide(idx) {
+            toggleIndexModal(false);
+            if (idx === currentSlide) return;
+            goToSlide(idx);
+        }
+
+        function toggleIndexModal(forceState) {
+            const isHidden = indexModal.classList.contains("hidden");
+            const shouldOpen = (typeof forceState === "boolean") ? forceState : isHidden;
+
+            if (shouldOpen) {
+                while (indexGrid.firstChild) {
+                    indexGrid.removeChild(indexGrid.firstChild);
+                }
+
+                SLIDES.forEach((s, idx) => {
+                    const isActive = (idx === currentSlide);
+                    const btn = document.createElement("button");
+                    btn.className = isActive
+                        ? "text-left p-3.5 rounded-xl border transition bg-slate-900 text-white border-amber-400 ring-2 ring-amber-400/60 flex flex-col justify-between gap-1.5 cursor-pointer shadow-md"
+                        : "text-left p-3.5 rounded-xl border transition bg-[#0B1322] text-slate-200 border-slate-700/80 hover:border-sky-400 flex flex-col justify-between gap-1.5 cursor-pointer shadow-md";
+                    btn.addEventListener("click", function () {
+                        this.blur();
+                        jumpToSlide(idx);
+                    });
+
+                    const top = document.createElement("div");
+                    top.className = "flex items-center justify-between w-full gap-2";
+
+                    const numSpan = document.createElement("span");
+                    numSpan.className = isActive
+                        ? "text-xs font-extrabold text-amber-300 shrink-0"
+                        : "text-xs font-extrabold text-sky-400 shrink-0";
+                    numSpan.textContent = "TRANG " + String(idx + 1).padStart(2, "0");
+
+                    const secSpan = document.createElement("span");
+                    secSpan.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-amber-400/15 text-amber-300 border border-amber-400/30 truncate";
+                    secSpan.textContent = s.section;
+
+                    top.appendChild(numSpan);
+                    top.appendChild(secSpan);
+
+                    const titleDiv = document.createElement("div");
+                    titleDiv.className = "font-bold text-xs sm:text-sm line-clamp-2 text-white";
+                    titleDiv.textContent = s.title;
+
+                    btn.appendChild(top);
+                    btn.appendChild(titleDiv);
+                    indexGrid.appendChild(btn);
+                });
+
+                indexModal.classList.remove("hidden");
+                indexModal.classList.add("flex");
+            } else {
+                indexModal.classList.add("hidden");
+                indexModal.classList.remove("flex");
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        // Single Unified Keyboard Listener (Prevents Double-Skip & Button Focus Replay)
+        window.addEventListener("keydown", (e) => {
+            if (e.repeat) return;
+
+            const navKeys = ["ArrowRight", "ArrowLeft", " ", "PageDown", "PageUp"];
+            if (navKeys.includes(e.key)) {
+                if (e.key === " " && document.activeElement && ["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+                    return;
+                }
+                e.preventDefault();
+                if (document.activeElement && typeof document.activeElement.blur === "function") {
+                    document.activeElement.blur();
+                }
+                if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+                    nextSlide();
+                } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+                    prevSlide();
+                }
+            } else if (e.key === "g" || e.key === "G") {
+                e.preventDefault();
+                toggleIndexModal();
+            } else if (e.key === "f" || e.key === "F") {
+                e.preventDefault();
+                toggleFullScreen();
+            } else if (e.key === "Escape") {
+                toggleIndexModal(false);
+                closeFigureZoom();
+            }
+        });
+
+        /* =========================================================================
+           4. 3-LAYER BATTLEFIELD CANVAS ENGINE
+              - Layer 1: Drifting Battlefield Smoke Wisps
+              - Layer 2: Sweeping Interceptor Jets with Afterburner & Contrails
+              - Layer 3: Anti-Aircraft Tracer Streaks & High-Altitude Flak Bursts
+           ========================================================================= */
+        let ambientEnabled = true;
+        const canvas = document.getElementById("ambientCanvas");
+        const ctx = canvas.getContext("2d");
+        let cw = 0, ch = 0;
+
+        function resizeCanvas() {
+            cw = canvas.width = window.innerWidth;
+            ch = canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+
+        const smokeLayers = Array.from({ length: 14 }, () => ({
+            x: Math.random() * 1600,
+            r: 120 + Math.random() * 170,
+            vx: 0.16 + Math.random() * 0.24,
+            alpha: 0.04 + Math.random() * 0.04,
+            offsetY: Math.random() * 210
+        }));
+
+        const jets = [];
+        function spawnJet() {
+            const goRight = Math.random() > 0.35;
+            const y = ch * (0.12 + Math.random() * 0.32);
+            const speed = (2.6 + Math.random() * 1.4) * (goRight ? 1 : -1);
+            jets.push({
+                x: goRight ? -90 : cw + 90,
+                y,
+                vx: speed,
+                vy: (Math.random() - 0.5) * 0.25,
+                scale: 0.75 + Math.random() * 0.35,
+                contrail: []
+            });
+        }
+
+        const tracers = [];
+        const flakBursts = [];
+
+        function spawnTracerVolley() {
+            const fromLeft = Math.random() > 0.5;
+            const baseX = fromLeft ? cw * (0.08 + Math.random() * 0.25) : cw * (0.67 + Math.random() * 0.25);
+            const count = 2 + Math.floor(Math.random() * 2);
+
+            for (let k = 0; k < count; k++) {
+                setTimeout(() => {
+                    const startX = baseX + (Math.random() - 0.5) * 35;
+                    const startY = ch + 10;
+                    const vx = fromLeft ? (3.2 + Math.random() * 1.8) : -(3.2 + Math.random() * 1.8);
+                    const vy = -(7.6 + Math.random() * 2.4);
+                    tracers.push({
+                        x: startX,
+                        y: startY,
+                        vx,
+                        vy,
+                        gravity: 0.028,
+                        history: [],
+                        maxHistory: 20,
+                        isRed: Math.random() > 0.45,
+                        burstY: ch * (0.14 + Math.random() * 0.24),
+                        life: 1.0
+                    });
+                }, k * 140);
+            }
+        }
+
+        let frameCount = 0;
+        function animateAmbient() {
+            requestAnimationFrame(animateAmbient);
+            if (!ambientEnabled) return;
+
+            ctx.clearRect(0, 0, cw, ch);
+            frameCount++;
+
+            // Layer 1: Battlefield Smoke Wisps
+            smokeLayers.forEach(p => {
+                p.x += p.vx;
+                if (p.x - p.r > cw) p.x = -p.r;
+                const py = ch - 24 - p.offsetY;
+                const grad = ctx.createRadialGradient(p.x, py, 14, p.x, py, p.r);
+                grad.addColorStop(0, `rgba(148, 163, 184, ${p.alpha})`);
+                grad.addColorStop(1, "rgba(4, 7, 13, 0)");
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(p.x, py, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Layer 2: Interceptor Jets with Afterburners & Contrails
+            if (frameCount % 320 === 45 && jets.length < 2) {
+                spawnJet();
+            }
+
+            for (let i = jets.length - 1; i >= 0; i--) {
+                const j = jets[i];
+                j.x += j.vx;
+                j.y += j.vy;
+
+                j.contrail.push({ x: j.x, y: j.y });
+                if (j.contrail.length > 55) j.contrail.shift();
+
+                if (j.contrail.length > 2) {
+                    const tail = j.contrail[0];
+                    const grad = ctx.createLinearGradient(tail.x, tail.y, j.x, j.y);
+                    grad.addColorStop(0, "rgba(148, 163, 184, 0)");
+                    grad.addColorStop(1, "rgba(186, 230, 253, 0.28)");
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = 2.2 * j.scale;
+                    ctx.beginPath();
+                    ctx.moveTo(tail.x, tail.y);
+                    for (let c = 1; c < j.contrail.length; c++) {
+                        ctx.lineTo(j.contrail[c].x, j.contrail[c].y);
+                    }
+                    ctx.stroke();
+                }
+
+                ctx.save();
+                ctx.translate(j.x, j.y);
+                const dir = j.vx >= 0 ? 1 : -1;
+                ctx.scale(dir * j.scale, j.scale);
+
+                const flicker = 12 + Math.random() * 8;
+                const abGrad = ctx.createLinearGradient(-14, 0, -14 - flicker, 0);
+                abGrad.addColorStop(0, "rgba(254, 240, 138, 0.9)");
+                abGrad.addColorStop(0.5, "rgba(249, 115, 22, 0.65)");
+                abGrad.addColorStop(1, "rgba(239, 68, 68, 0)");
+                ctx.fillStyle = abGrad;
+                ctx.beginPath();
+                ctx.moveTo(-14, -2.5);
+                ctx.lineTo(-14 - flicker, 0);
+                ctx.lineTo(-14, 2.5);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = "rgba(148, 163, 184, 0.42)";
+                ctx.strokeStyle = "rgba(226, 232, 240, 0.55)";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(22, 0);
+                ctx.lineTo(4, -3);
+                ctx.lineTo(-8, -14);
+                ctx.lineTo(-13, -14);
+                ctx.lineTo(-11, -3);
+                ctx.lineTo(-17, -7);
+                ctx.lineTo(-19, -7);
+                ctx.lineTo(-16, 0);
+                ctx.lineTo(-19, 7);
+                ctx.lineTo(-17, 7);
+                ctx.lineTo(-11, 3);
+                ctx.lineTo(-13, 14);
+                ctx.lineTo(-8, 14);
+                ctx.lineTo(4, 3);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+
+                if ((dir === 1 && j.x > cw + 140) || (dir === -1 && j.x < -140)) {
+                    jets.splice(i, 1);
+                }
+            }
+
+            // Layer 3: Anti-Aircraft Tracers & High-Altitude Flak Bursts
+            if (frameCount % 175 === 25 && tracers.length < 4) {
+                spawnTracerVolley();
+            }
+
+            for (let i = tracers.length - 1; i >= 0; i--) {
+                const t = tracers[i];
+                t.x += t.vx;
+                t.y += t.vy;
+                t.vy += t.gravity;
+                t.life -= 0.008;
+
+                t.history.push({ x: t.x, y: t.y });
+                if (t.history.length > t.maxHistory) t.history.shift();
+
+                if (t.history.length > 1) {
+                    const tail = t.history[0];
+                    const head = t.history[t.history.length - 1];
+                    const grad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+                    const coreColor = t.isRed
+                        ? `rgba(248, 113, 113, ${Math.max(0, t.life * 0.85)})`
+                        : `rgba(250, 204, 21, ${Math.max(0, t.life * 0.9)})`;
+                    grad.addColorStop(0, "rgba(0, 0, 0, 0)");
+                    grad.addColorStop(1, coreColor);
+
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = 2.2;
+                    ctx.lineCap = "round";
+                    ctx.beginPath();
+                    ctx.moveTo(tail.x, tail.y);
+                    for (let j = 1; j < t.history.length; j++) {
+                        ctx.lineTo(t.history[j].x, t.history[j].y);
+                    }
+                    ctx.stroke();
+
+                    ctx.fillStyle = `rgba(254, 249, 195, ${Math.max(0, t.life)})`;
+                    ctx.beginPath();
+                    ctx.arc(head.x, head.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                if (t.y <= t.burstY || t.life <= 0) {
+                    if (t.y <= t.burstY) {
+                        flakBursts.push({
+                            x: t.x,
+                            y: t.y,
+                            r: 4,
+                            maxR: 26 + Math.random() * 14,
+                            alpha: 0.75
+                        });
+                    }
+                    tracers.splice(i, 1);
+                }
+            }
+
+            for (let i = flakBursts.length - 1; i >= 0; i--) {
+                const f = flakBursts[i];
+                f.r += 1.4;
+                f.alpha -= 0.032;
+
+                if (f.alpha > 0) {
+                    const burstGrad = ctx.createRadialGradient(f.x, f.y, 1, f.x, f.y, f.r);
+                    burstGrad.addColorStop(0, `rgba(254, 240, 138, ${f.alpha})`);
+                    burstGrad.addColorStop(0.5, `rgba(249, 115, 22, ${f.alpha * 0.55})`);
+                    burstGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+                    ctx.fillStyle = burstGrad;
+                    ctx.beginPath();
+                    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    flakBursts.splice(i, 1);
+                }
+            }
+        }
+
+        function toggleAmbientFx() {
+            ambientEnabled = !ambientEnabled;
+            const dot = document.getElementById("fxDot");
+            if (ambientEnabled) {
+                dot.classList.remove("bg-slate-500");
+                dot.classList.add("bg-emerald-400");
+            } else {
+                dot.classList.remove("bg-emerald-400");
+                dot.classList.add("bg-slate-500");
+                ctx.clearRect(0, 0, cw, ch);
+            }
+        }
+
+        // Safe Initial Render on DOMContentLoaded
+        function initPresentation() {
+            try {
+                resizeCanvas();
+                renderSlide(0, false);
+            } catch (err) {
+                console.error("Initialization error:", err);
+            }
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initPresentation);
+        } else {
+            initPresentation();
+        }
+
+        // Start Ambient Battlefield Loop on Window Load
+        window.onload = function () {
+            resizeCanvas();
+            spawnJet();
+            spawnTracerVolley();
+            animateAmbient();
+        };
+    </script>
+</body>
+</html>
